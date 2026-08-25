@@ -1,0 +1,9 @@
+# nada de material interno neste repositório público
+*.xlsx
+*.mp4
+*.MP4
+*.jpg
+*.jpeg
+*.png
+*.pdf
+.DS_Store

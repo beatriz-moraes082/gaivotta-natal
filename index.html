@@ -1,0 +1,856 @@
+<title>Monte Sua Árvore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+
+<style>
+  :root{
+    --tinta:#191430;
+    --tinta-suave:#655E86;
+    --cartao:#FFFFFF;
+    --fundo:#F4F1EA;
+    --borda:#DAD5E2;
+    --indigo:#2E1C6F;
+    --indigo-txt:#FFF6E9;
+    --sol:#F0A02C;
+    --dourado:#C99320;
+    --tom:#D2342A;
+    --tinta-arte:#191430;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --tinta:#EFEBFA;
+      --tinta-suave:#A79FC4;
+      --cartao:#17142A;
+      --fundo:#0C0A18;
+      --borda:#332C52;
+      --indigo:#7E6BE8;
+      --indigo-txt:#120C28;
+      --sol:#FFB44D;
+      --dourado:#E8B84B;
+      --tinta-arte:#F3EEE2;
+    }
+  }
+  :root[data-theme="dark"]{
+    --tinta:#EFEBFA;
+    --tinta-suave:#A79FC4;
+    --cartao:#17142A;
+    --fundo:#0C0A18;
+    --borda:#332C52;
+    --indigo:#7E6BE8;
+    --indigo-txt:#120C28;
+    --sol:#FFB44D;
+    --dourado:#E8B84B;
+    --tinta-arte:#F3EEE2;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--fundo);color:var(--tinta);
+    font-family:"DM Sans",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .app{
+    max-width:460px;margin:0 auto;min-height:100dvh;
+    background:var(--cartao);display:flex;flex-direction:column;
+    position:relative;overflow:hidden;
+  }
+  @media (min-width:620px){
+    .app{
+      min-height:auto;height:min(880px,calc(100dvh - 40px));
+      margin:20px auto;border-radius:32px;
+      box-shadow:0 30px 70px -24px rgba(25,20,48,.42);
+    }
+  }
+
+  /* ---------- festão de luzes ---------- */
+  header{
+    flex:none;display:flex;align-items:center;gap:10px;
+    padding:10px 14px 6px;padding-top:max(10px,env(safe-area-inset-top));
+    background:var(--cartao);position:relative;z-index:3;
+  }
+  .voltar{
+    width:40px;height:40px;flex:none;border:none;background:transparent;
+    color:var(--tinta);border-radius:50%;display:grid;place-items:center;
+    cursor:pointer;transition:background .15s,transform .12s;
+  }
+  .voltar:hover{background:var(--fundo)}
+  .voltar:active{transform:scale(.9)}
+  .voltar[hidden]{display:none}
+
+  .festao{flex:1;height:38px;position:relative}
+  .festao[hidden]{display:none}
+  .festao svg{position:absolute;inset:0;width:100%;height:100%}
+  .fio{fill:none;stroke:var(--borda);stroke-width:2.5;stroke-linecap:round}
+  .luz{
+    position:absolute;width:11px;height:11px;margin-left:-5.5px;
+    border-radius:50% 50% 56% 56%;background:var(--borda);
+    transition:background .35s,box-shadow .35s,transform .35s cubic-bezier(.3,1.6,.5,1);
+  }
+  .luz::before{
+    content:"";position:absolute;top:-4px;left:50%;margin-left:-2.5px;
+    width:5px;height:4px;border-radius:1.5px;background:var(--borda);
+  }
+  .luz.on{transform:scale(1.34)}
+  .conta{
+    flex:none;font-size:12px;font-weight:700;color:var(--tinta-suave);
+    font-variant-numeric:tabular-nums;letter-spacing:.04em;
+  }
+  .conta[hidden]{display:none}
+
+  /* ---------- banda ilustrada ---------- */
+  main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;position:relative}
+  .banda{
+    flex:none;height:214px;position:relative;display:grid;place-items:center;
+    margin-bottom:-30px;
+  }
+  .banda svg{width:172px;height:172px;display:block}
+
+  .folha{
+    position:relative;z-index:2;flex:1;background:var(--cartao);
+    border-radius:30px 30px 0 0;padding:26px 22px 24px;
+    display:flex;flex-direction:column;gap:18px;
+  }
+
+  h1{
+    font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    font-weight:800;font-size:30px;line-height:1.08;letter-spacing:-.02em;
+    margin:0;text-wrap:balance;
+  }
+  .dica{margin:-9px 0 0;font-size:15px;line-height:1.5;color:var(--tinta-suave)}
+
+  /* ---------- opções ---------- */
+  .lista{display:flex;flex-direction:column;gap:10px}
+  .op{
+    display:flex;align-items:center;gap:12px;width:100%;min-height:58px;
+    padding:12px 14px 12px 16px;background:var(--cartao);
+    border:2px solid var(--borda);border-radius:16px;
+    font:inherit;font-size:16.5px;color:var(--tinta);text-align:left;cursor:pointer;
+    transition:border-color .15s,background .2s,transform .12s;
+  }
+  .op:hover{border-color:var(--tinta-suave)}
+  .op:active{transform:scale(.985)}
+  .op[aria-pressed="true"]{
+    border-color:var(--indigo);
+    background:color-mix(in srgb, var(--tom) 15%, var(--cartao));
+  }
+  .op .txt{flex:1;line-height:1.25;font-weight:500}
+  .op .sub{display:block;font-size:13.5px;font-weight:400;color:var(--tinta-suave);margin-top:3px}
+  .op[aria-pressed="true"] .sub{color:var(--tinta);opacity:.72}
+  .marca{
+    width:26px;height:26px;flex:none;border-radius:50%;
+    border:2px solid var(--borda);display:grid;place-items:center;
+    transition:background .2s,border-color .2s;
+  }
+  .op[aria-pressed="true"] .marca{background:var(--indigo);border-color:var(--indigo)}
+  .marca svg{width:14px;height:14px;opacity:0;stroke:var(--indigo-txt);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .15s}
+  .op[aria-pressed="true"] .marca svg{opacity:1;animation:selo .3s cubic-bezier(.3,1.7,.5,1) both}
+  @keyframes selo{from{transform:scale(.4)}to{transform:scale(1)}}
+
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{
+    padding:12px 16px;min-height:48px;
+    border:2px solid var(--borda);border-radius:999px;
+    background:var(--cartao);color:var(--tinta);
+    font:inherit;font-size:15.5px;font-weight:500;cursor:pointer;
+    transition:border-color .15s,background .2s,transform .12s;
+  }
+  .chip:hover{border-color:var(--tinta-suave)}
+  .chip:active{transform:scale(.96)}
+  .chip[aria-pressed="true"]{
+    border-color:var(--indigo);
+    background:color-mix(in srgb, var(--tom) 15%, var(--cartao));
+    animation:selo .28s cubic-bezier(.3,1.7,.5,1) both;
+  }
+
+  .campo{display:flex;flex-direction:column;gap:7px}
+  .campo label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-suave);font-weight:700}
+  input,textarea{
+    font:inherit;font-size:16px;color:var(--tinta);background:var(--cartao);
+    border:2px solid var(--borda);border-radius:16px;padding:14px 16px;width:100%;
+  }
+  textarea{min-height:104px;resize:vertical;line-height:1.45}
+  input:focus,textarea:focus{outline:none;border-color:var(--indigo)}
+  input::placeholder,textarea::placeholder{color:var(--tinta-suave);opacity:.75}
+
+  :where(button,input,textarea,a):focus-visible{outline:3px solid var(--sol);outline-offset:2px}
+
+  /* ---------- rodapé ---------- */
+  footer{
+    flex:none;padding:12px 20px;padding-bottom:max(14px,env(safe-area-inset-bottom));
+    background:var(--cartao);position:relative;z-index:3;
+    box-shadow:0 -12px 20px -12px rgba(25,20,48,.18);
+  }
+  footer[hidden]{display:none}
+  .btn{
+    width:100%;min-height:56px;border:none;border-radius:16px;
+    background:var(--indigo);color:var(--indigo-txt);
+    font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    font-size:18px;font-weight:800;letter-spacing:-.01em;
+    cursor:pointer;transition:transform .12s,filter .15s;
+  }
+  .btn:hover{filter:brightness(1.12)}
+  .btn:active{transform:scale(.985)}
+  .btn:disabled{background:var(--fundo);color:var(--tinta-suave);cursor:not-allowed;filter:none}
+  .pular{
+    display:block;width:100%;margin-top:2px;padding:11px;background:none;border:none;
+    color:var(--tinta-suave);font:inherit;font-size:15px;font-weight:500;
+    text-decoration:underline;cursor:pointer;
+  }
+  .pular[hidden]{display:none}
+
+  /* ---------- abertura ---------- */
+  .capa{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:12px;text-align:center;padding:14px 24px 34px;
+    background:#2E1C6F;color:#FFF6E9;
+    animation:sobe .5s cubic-bezier(.2,.75,.3,1) both;
+  }
+  .capa .arv{width:184px;height:184px}
+  .marca-gaivotta{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .marca-gaivotta svg{width:62px;height:30px}
+  .marca-gaivotta span{
+    font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    font-weight:800;font-size:15px;letter-spacing:.3em;text-indent:.3em;
+  }
+  .capa h1{font-size:37px;line-height:1.03}
+  .capa p{margin:0;font-size:16.5px;line-height:1.5;max-width:31ch;opacity:.86}
+  .capa .selo{
+    font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+    font-weight:700;color:var(--sol);margin:0;
+  }
+
+  /* ---------- espera ---------- */
+  .carregando{
+    position:absolute;inset:0;z-index:9;background:#2E1C6F;color:#FFF6E9;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:22px;padding:30px;text-align:center;
+  }
+  .carregando svg{width:150px;height:150px}
+  .carregando h2{
+    font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    font-weight:800;font-size:27px;line-height:1.12;margin:0;max-width:16ch;text-wrap:balance;
+  }
+  .balanca{transform-origin:50% 8%;animation:balanca 2.2s ease-in-out infinite}
+  @keyframes balanca{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+
+  /* ---------- resultado ---------- */
+  #confete{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:8}
+  .fichas{display:flex;flex-wrap:wrap;gap:8px}
+  .ficha{
+    display:inline-flex;align-items:baseline;gap:7px;padding:9px 14px;border-radius:999px;
+    background:color-mix(in srgb, var(--tom) 14%, var(--cartao));
+    border:2px solid var(--indigo);font-size:14.5px;font-weight:500;line-height:1.2;
+  }
+  .ficha b{font-weight:700;opacity:.6;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+  .aviso{
+    display:flex;gap:11px;align-items:flex-start;
+    background:color-mix(in srgb, var(--sol) 26%, var(--cartao));
+    border-radius:16px;padding:14px 16px;font-size:14.5px;line-height:1.45;
+  }
+  .aviso svg{flex:none;width:20px;height:20px;margin-top:1px}
+  .lojas{
+    display:flex;flex-direction:column;gap:4px;font-size:14px;
+    line-height:1.45;color:var(--tinta-suave);
+  }
+  .lojas b{color:var(--tinta);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase}
+
+  /* ---------- entradas ---------- */
+  .entra .banda svg{animation:pula .5s cubic-bezier(.25,1.5,.45,1) both}
+  .entra .folha{animation:sobe .4s cubic-bezier(.2,.75,.3,1) both}
+  .entra .folha > *{animation:sobe .42s cubic-bezier(.2,.75,.3,1) both}
+  .entra .folha > *:nth-child(1){animation-delay:.04s}
+  .entra .folha > *:nth-child(2){animation-delay:.08s}
+  .entra .folha > *:nth-child(3){animation-delay:.12s}
+  .entra .folha > *:nth-child(4){animation-delay:.15s}
+  @keyframes pula{from{opacity:0;transform:scale(.72) translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes sobe{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  }
+  @media (max-width:359px){
+    h1{font-size:26px}
+    .capa h1{font-size:31px}
+    .banda{height:184px}
+    .banda svg{width:146px;height:146px}
+  }
+</style>
+
+<div class="app" id="app">
+  <header>
+    <button class="voltar" id="voltar" hidden aria-label="Voltar">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+    </button>
+    <div class="festao" id="festao" hidden>
+      <svg viewBox="0 0 300 38" preserveAspectRatio="none"><path class="fio" d="M2 6 Q150 22 298 6" vector-effect="non-scaling-stroke"/></svg>
+    </div>
+    <div class="conta" id="conta" hidden></div>
+  </header>
+
+  <main id="palco"></main>
+
+  <footer id="rodape" hidden>
+    <button class="btn" id="avancar">Continuar</button>
+    <button class="pular" id="pular" hidden>Pular e finalizar</button>
+  </footer>
+</div>
+
+<script>
+/* ===================================================================
+   Gaivotta · Natal 2026 — quiz de briefing de árvore
+   TROCAR ANTES DE PUBLICAR: número de WhatsApp que recebe os briefings.
+   Formato: 55 + DDD + número, só dígitos.
+   =================================================================== */
+const WHATSAPP = "5599999999999";
+
+/* paleta: marca (indigo + sol) + Natal Gaivotta (vermelho, dourado, verde) */
+const C = {
+  indigo:"#2E1C6F", sol:"#F0A02C",
+  verde:"#2E8055", verdeE:"#1B5A3C",
+  vermelho:"#D2342A", vermelhoE:"#9E1F18",
+  dourado:"#D9A93B", creme:"#FFF3E2", bege:"#D8B48C", madeira:"#B07A45"
+};
+const T = 'stroke="var(--tinta-arte)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"';
+const t4 = 'stroke="var(--tinta-arte)" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+
+/* laço de fita — assinatura das árvores da loja */
+const laco = (x,y,s,cor=C.vermelho)=>`
+  <g transform="translate(${x} ${y}) scale(${s})">
+    <path d="M-7 6 L-26 52 L-4 42 Z" fill="${cor}" ${T}/>
+    <path d="M7 6 L26 52 L4 42 Z" fill="${cor}" ${T}/>
+    <path d="M0 0 C-24 -30 -50 -14 -40 10 C-32 28 -12 20 0 0 Z" fill="${cor}" ${T}/>
+    <path d="M0 0 C24 -30 50 -14 40 10 C32 28 12 20 0 0 Z" fill="${cor}" ${T}/>
+    <circle cx="0" cy="2" r="11" fill="${cor}" ${T}/>
+  </g>`;
+
+/* --- ilustrações chapadas --- */
+const ART = {
+  arvore:`
+    <path d="M70 14 L98 56 H84 L112 98 H92 L124 136 H16 L48 98 H28 L56 56 H42 Z" fill="${C.verde}" ${T}/>
+    <rect x="60" y="136" width="20" height="16" rx="3" fill="${C.madeira}" ${T}/>
+    <path d="M70 4 l6.5 13 14 2 -10 10 2.5 14 -13 -6.5 -13 6.5 2.5 -14 -10 -10 14 -2 Z" fill="${C.dourado}" ${T}/>
+    <circle cx="57" cy="78" r="7.5" fill="${C.vermelho}" ${T}/>
+    <circle cx="88" cy="112" r="7.5" fill="${C.dourado}" ${T}/>
+    <circle cx="52" cy="120" r="7.5" fill="${C.vermelho}" ${T}/>`,
+
+  loja:`
+    <rect x="24" y="66" width="92" height="64" rx="4" fill="${C.creme}" ${T}/>
+    <path d="M122 48 v14 q-12.25 12 -24.5 0 q-12.25 12 -24.5 0 q-12.25 12 -24.5 0 q-12.25 12 -24.5 0 V48 Z" fill="${C.vermelho}" ${T}/>
+    <rect x="68" y="92" width="30" height="38" rx="3" fill="${C.verdeE}" ${T}/>
+    <rect x="38" y="86" width="21" height="21" rx="3" fill="${C.dourado}" ${T}/>
+    <path d="M70 16 L86 46 H54 Z" fill="${C.verde}" ${T}/>
+    <path d="M70 8 l4 8 9 1 -6.5 6.5 1.5 9 -8 -4.5 -8 4.5 1.5 -9 -6.5 -6.5 9 -1 Z" fill="${C.dourado}" ${T}/>`,
+
+  medida:`
+    <rect x="14" y="18" width="30" height="120" rx="7" fill="${C.dourado}" ${T}/>
+    <path d="M14 44 h13 M14 68 h13 M14 92 h13 M14 116 h13" ${t4}/>
+    <path d="M98 36 L130 114 H66 Z" fill="${C.verde}" ${T}/>
+    <rect x="90" y="114" width="16" height="16" rx="3" fill="${C.madeira}" ${T}/>
+    <path d="M68 28 v110 M60 36 l8 -8 8 8 M60 130 l8 8 8 -8" ${t4}/>`,
+
+  caixa:`
+    <rect x="20" y="66" width="100" height="68" rx="6" fill="${C.creme}" ${T}/>
+    <path d="M18 46 H122 V68 H18 Z" fill="${C.vermelho}" ${T}/>
+    <path d="M70 68 v66" ${t4}/>
+    <circle cx="42" cy="104" r="12" fill="${C.dourado}" ${T}/>
+    <circle cx="98" cy="104" r="12" fill="${C.vermelho}" ${T}/>
+    ${laco(70,34,0.62)}`,
+
+  laco:`
+    <path d="M112 8 v18" ${t4}/>
+    <circle cx="112" cy="46" r="21" fill="${C.dourado}" ${T}/>
+    <path d="M98 36 q14 10 28 0" stroke="${C.creme}" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    ${laco(60,68,1.25)}`,
+
+  gato:`
+    <path d="M28 76 L22 38 L52 60" fill="${C.bege}" ${T}/>
+    <path d="M104 76 L110 38 L80 60" fill="${C.bege}" ${T}/>
+    <ellipse cx="66" cy="90" rx="44" ry="38" fill="${C.bege}" ${T}/>
+    <circle cx="50" cy="86" r="5.5" fill="var(--tinta-arte)"/>
+    <circle cx="82" cy="86" r="5.5" fill="var(--tinta-arte)"/>
+    <path d="M60 102 q6 7 12 0" ${t4}/>
+    <path d="M118 16 v24" ${t4}/>
+    <circle cx="118" cy="54" r="14" fill="${C.vermelho}" ${T}/>`,
+
+  escada:`
+    <path d="M98 46 L130 124 H66 Z" fill="${C.verde}" ${T}/>
+    <path d="M30 138 L46 26" stroke="var(--tinta-arte)" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M74 138 L58 26" stroke="var(--tinta-arte)" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M43 48 h18 M39 80 h26 M35 112 h34" stroke="${C.dourado}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M43 48 h18 M39 80 h26 M35 112 h34" stroke="var(--tinta-arte)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="52" cy="16" r="11" fill="${C.vermelho}" ${T}/>`,
+
+  guirlanda:`
+    <circle cx="70" cy="72" r="45" fill="none" stroke="${C.verdeE}" stroke-width="27"/>
+    <circle cx="70" cy="72" r="45" fill="none" ${T}/>
+    <circle cx="70" cy="72" r="32" fill="none" stroke="var(--tinta-arte)" stroke-width="4"/>
+    <circle cx="41" cy="47" r="8" fill="${C.vermelho}" ${T}/>
+    <circle cx="102" cy="58" r="8" fill="${C.dourado}" ${T}/>
+    <circle cx="52" cy="104" r="8" fill="${C.dourado}" ${T}/>
+    ${laco(70,106,0.58)}`,
+
+  calendario:`
+    <rect x="16" y="30" width="108" height="102" rx="10" fill="${C.creme}" ${T}/>
+    <path d="M16 62 h108" stroke="var(--tinta-arte)" stroke-width="5"/>
+    <path d="M16 40 a10 10 0 0 1 10 -10 h88 a10 10 0 0 1 10 10 v22 H16 Z" fill="${C.vermelho}" ${T}/>
+    <path d="M44 14 v22 M96 14 v22" stroke="var(--tinta-arte)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="42" cy="84" r="5" fill="${C.verdeE}"/><circle cx="70" cy="84" r="5" fill="${C.verdeE}"/><circle cx="98" cy="84" r="5" fill="${C.verdeE}"/>
+    <circle cx="42" cy="110" r="5" fill="${C.verdeE}"/>
+    <circle cx="78" cy="110" r="16" fill="${C.dourado}" ${T}/>`,
+
+  etiqueta:`
+    <path d="M74 16 H124 V66 L62 128 L12 78 Z" fill="${C.vermelho}" ${T}/>
+    <circle cx="102" cy="38" r="11" fill="${C.creme}" ${T}/>
+    <path d="M38 78 l24 24 M54 62 l24 24" stroke="${C.creme}" stroke-width="6" stroke-linecap="round"/>`,
+
+  pino:`
+    <path d="M70 138 C70 138 118 92 118 60 A48 48 0 0 0 22 60 C22 92 70 138 70 138 Z" fill="${C.vermelho}" ${T}/>
+    <path d="M52 74 V52 l18 -14 18 14 v22 Z" fill="${C.creme}" ${T}/>
+    <path d="M64 74 v-12 h12 v12" ${t4}/>`,
+
+  conversa:`
+    <path d="M16 28 H124 V94 H70 L42 120 V94 H16 Z" fill="${C.verde}" ${T}/>
+    <path d="M42 54 h56 M42 74 h34" stroke="${C.creme}" stroke-width="6.5" stroke-linecap="round"/>`,
+
+  festa:`
+    <path d="M70 16 L98 58 H84 L112 100 H92 L124 138 H16 L48 100 H28 L56 58 H42 Z" fill="${C.verde}" ${T}/>
+    <path d="M70 6 l6.5 13 14 2 -10 10 2.5 14 -13 -6.5 -13 6.5 2.5 -14 -10 -10 14 -2 Z" fill="${C.dourado}" ${T}/>
+    <circle cx="57" cy="80" r="7.5" fill="${C.vermelho}" ${T}/>
+    <circle cx="88" cy="114" r="7.5" fill="${C.dourado}" ${T}/>
+    <circle cx="52" cy="122" r="7.5" fill="${C.vermelho}" ${T}/>
+    <path d="M10 34 l11 8 M130 34 l-11 8 M4 94 l13 3 M136 94 l-13 3" stroke="${C.sol}" stroke-width="6" stroke-linecap="round"/>`,
+
+  /* marca — traço livre inspirado no símbolo da loja (gaivota + sol) */
+  gaivotta:`
+    <circle cx="76" cy="20" r="11" fill="${C.sol}"/>
+    <path d="M4 26 C16 6 30 6 40 20 C50 6 64 6 76 26 C62 16 50 18 40 30 C30 18 18 16 4 26 Z" fill="#FFF6E9"/>`
+};
+
+/* --- bandas: cada pergunta ganha um fundo, com tinta clara ou escura --- */
+const BANDAS = {
+  creme:   {bg:"#F7E7D3", tinta:"#191430", tom:"#D2342A"},
+  pinho:   {bg:"#1B5A3C", tinta:"#FFF3E2", tom:"#2E8055"},
+  dourado: {bg:"#F5DFA6", tinta:"#191430", tom:"#C99320"},
+  cereja:  {bg:"#C0362B", tinta:"#FFF3E2", tom:"#D2342A"},
+  neve:    {bg:"#E6E3F2", tinta:"#191430", tom:"#2E1C6F"},
+  indigo:  {bg:"#2E1C6F", tinta:"#FFF6E9", tom:"#2E1C6F"}
+};
+
+/* --- fluxo --- */
+const PASSOS = [
+  { id:"local", tipo:"unica", art:"loja", banda:"neve",
+    q:"Onde essa árvore vai brilhar?",
+    dica:"O espaço muda tudo: proporção, quantidade de enfeite e até o horário da montagem.",
+    ops:[
+      {v:"Minha casa", sub:"Sala, hall ou quarto"},
+      {v:"Minha loja ou comércio", sub:"Vitrine, balcão, salão"},
+      {v:"Escritório ou empresa", sub:"Recepção, coworking"},
+      {v:"Condomínio, igreja ou evento", sub:"Área comum, pé-direito alto"}
+    ]},
+
+  { id:"tem", tipo:"unica", art:"arvore", banda:"creme",
+    q:"Você já tem a árvore?",
+    ops:[
+      {v:"Tenho, guardada desde o ano passado"},
+      {v:"Tenho, mas precisa de socorro", sub:"Falhada, tortinha, galhos soltos"},
+      {v:"Quero comprar uma nova"},
+      {v:"Quero alugar só para esta temporada"}
+    ]},
+
+  { id:"tamanho", tipo:"unica", art:"medida", banda:"cereja",
+    q:"Qual o tamanho que você quer?",
+    dica:"Dica de ouro: meça do chão ao teto e tire 50 cm — sobra espaço pra ponteira respirar.",
+    ops:[
+      {v:"Até 1,50 m", sub:"Mesa, aparador, cantinho"},
+      {v:"1,80 m", sub:"A queridinha das salas"},
+      {v:"2,10 m a 2,40 m", sub:"Presença de sobra"},
+      {v:"3 m ou mais", sub:"Pé-direito alto, loja, hall"},
+      {v:"Não sei ainda", sub:"Me ajuda a escolher"}
+    ]},
+
+  { id:"enfeites", tipo:"unica", art:"caixa", banda:"neve",
+    q:"E os enfeites, como estão?",
+    ops:[
+      {v:"Tenho tudo", sub:"Só preciso de mãos pra montar"},
+      {v:"Tenho uma base", sub:"Quero complementar e renovar"},
+      {v:"Começar do zero", sub:"Não tenho nada ainda"},
+      {v:"Quero peças artesanais", sub:"Crochê, feltro, feito à mão"}
+    ]},
+
+  { id:"estilo", tipo:"chips", max:2, art:"laco", banda:"pinho",
+    q:"Qual clima você quer criar?",
+    dica:"Escolha até 2 — a gente cuida pra que conversem entre si.",
+    ops:[
+      {v:"Clássico vermelho e dourado"},{v:"Neve: branco e prata"},
+      {v:"Rústico de fazenda"},{v:"Colorido e divertido"},
+      {v:"Sofisticado monocromático"},{v:"Nas cores da minha marca"},
+      {v:"Me surpreende"}
+    ]},
+
+  { id:"convivio", tipo:"unica", art:"gato", banda:"dourado",
+    q:"Alguém vai querer brincar com ela?",
+    dica:"Criança pequena, gato curioso ou movimento de loja pedem enfeite que não quebra.",
+    ops:[
+      {v:"Sim, criança pequena em casa"},
+      {v:"Sim, pet curioso", sub:"Já derrubou antes, confessa"},
+      {v:"Passa muita gente perto", sub:"Loja, corredor, área comum"},
+      {v:"Não, pode ser delicada"}
+    ]},
+
+  { id:"servico", tipo:"unica", art:"escada", banda:"indigo",
+    q:"Do que você precisa da gente?",
+    ops:[
+      {v:"Só os materiais", sub:"A montagem é comigo mesmo"},
+      {v:"Kit pronto", sub:"Tudo separado e combinado, eu monto"},
+      {v:"Montagem no local", sub:"Equipe vai até você"},
+      {v:"Montagem e desmontagem", sub:"Guardamos tudo em janeiro"},
+      {v:"Projeto completo", sub:"Árvore, ambientes e vitrine"}
+    ]},
+
+  { id:"extras", tipo:"chips", art:"guirlanda", banda:"creme",
+    q:"Além da árvore, o que mais entra na festa?",
+    dica:"Pode escolher quantos quiser.",
+    ops:[
+      {v:"Guirlanda de porta"},{v:"Mesa posta"},{v:"Escada ou corrimão"},
+      {v:"Vitrine"},{v:"Fachada"},{v:"Presépio"},{v:"Só a árvore mesmo"}
+    ]},
+
+  { id:"quando", tipo:"unica", art:"calendario", banda:"pinho",
+    q:"Quando você quer tudo montado?",
+    ops:[
+      {v:"O quanto antes", sub:"Ainda em outubro"},
+      {v:"Primeira quinzena de novembro"},
+      {v:"Segunda quinzena de novembro", sub:"O período mais concorrido"},
+      {v:"Começo de dezembro"},
+      {v:"Só pesquisando por enquanto"}
+    ]},
+
+  { id:"investimento", tipo:"unica", art:"etiqueta", banda:"dourado",
+    q:"Quanto você pensou em investir?",
+    dica:"Sem compromisso — serve pra montarmos uma proposta que cabe no seu bolso.",
+    ops:[
+      {v:"Até R$ 300"},{v:"R$ 300 a R$ 800"},{v:"R$ 800 a R$ 2.000"},
+      {v:"R$ 2.000 a R$ 5.000"},{v:"Acima de R$ 5.000"},{v:"Prefiro conversar antes"}
+    ]},
+
+  { id:"regiao", tipo:"unica", art:"pino", banda:"cereja",
+    q:"Você está por onde?",
+    dica:"A montagem no local sai das nossas duas lojas: Centro e Jatiúca.",
+    ops:[
+      {v:"Centro e arredores", sub:"Perto da Av. Moreira Lima"},
+      {v:"Jatiúca, Ponta Verde ou Pajuçara", sub:"Orla"},
+      {v:"Outro bairro de Maceió"},
+      {v:"Região metropolitana", sub:"Rio Largo, Marechal, Barra"},
+      {v:"Outra cidade"}
+    ]},
+
+  { id:"contato", tipo:"campos", art:"conversa", banda:"indigo",
+    q:"Pra quem mandamos a proposta?",
+    campos:[
+      {k:"nome", label:"Seu nome", ph:"Como podemos te chamar?", req:true},
+      {k:"zap", label:"WhatsApp", ph:"(00) 00000-0000", req:true, tipo:"tel"},
+      {k:"obs", label:"Quer contar mais alguma coisa?", ph:"Ex.: quero manter os enfeites da minha avó no meio dos novos...", area:true}
+    ],
+    pular:true}
+];
+
+const LUZES = ["#D2342A","#F0A02C","#1B5A3C","#D9A93B","#2E1C6F"];
+
+/* --- estado --- */
+const R = {};
+let i = 0;
+const app = document.getElementById("app");
+const palco = document.getElementById("palco");
+const rodape = document.getElementById("rodape");
+const btn = document.getElementById("avancar");
+const btnPular = document.getElementById("pular");
+const btnVoltar = document.getElementById("voltar");
+const festao = document.getElementById("festao");
+const conta = document.getElementById("conta");
+
+const el = (t,c,txt)=>{const n=document.createElement(t); if(c)n.className=c; if(txt!=null)n.textContent=txt; return n;};
+const check = `<span class="marca"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>`;
+
+function fazBanda(nome, art){
+  const b = BANDAS[nome];
+  const d = el("div","banda");
+  d.style.background = b.bg;
+  d.style.setProperty("--tinta-arte", b.tinta);
+  d.innerHTML = `<svg viewBox="0 0 140 152">${ART[art]}</svg>`;
+  app.style.setProperty("--tom", b.tom);
+  return d;
+}
+
+/* --- festão --- */
+const bulbos = [];
+(function montaFestao(){
+  const n = PASSOS.length;
+  for(let k=0;k<n;k++){
+    const t = k/(n-1);
+    const y = (1-t)*(1-t)*6 + 2*t*(1-t)*22 + t*t*6;   // acompanha a curva do fio
+    const b = el("span","luz");
+    b.style.left = (4 + t*92) + "%";
+    b.style.top = (y+2) + "px";
+    festao.append(b);
+    bulbos.push(b);
+  }
+})();
+
+function progresso(){
+  bulbos.forEach((b,k)=>{
+    const acesa = k < i;
+    b.classList.toggle("on", acesa);
+    b.style.background = acesa ? LUZES[k % LUZES.length] : "";
+    b.style.boxShadow = acesa ? `0 0 10px ${LUZES[k % LUZES.length]}99` : "";
+  });
+  conta.textContent = Math.min(i+1, PASSOS.length) + " de " + PASSOS.length;
+}
+
+/* --- abertura --- */
+function abertura(){
+  festao.hidden = conta.hidden = btnVoltar.hidden = true;
+  rodape.hidden = false; btnPular.hidden = true;
+  btn.textContent = "Bora montar"; btn.disabled = false;
+  btn.onclick = ()=>{ i=0; render(); };
+  palco.className = ""; palco.innerHTML = "";
+  app.style.setProperty("--tom", "#2E1C6F");
+
+  const c = el("div","capa");
+  c.style.setProperty("--tinta-arte", "#FFF6E9");
+  const marca = el("div","marca-gaivotta");
+  marca.innerHTML = `<svg viewBox="0 0 90 40">${ART.gaivotta}</svg><span>GAIVOTTA</span>`;
+  const arv = el("div");
+  arv.innerHTML = `<svg class="arv" viewBox="0 0 140 152">${ART.arvore}</svg>`;
+  c.append(marca, arv.firstElementChild);
+  c.append(el("h1","","Sua árvore de Natal, montada do seu jeito."));
+  c.append(el("p","","12 perguntinhas rápidas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo."));
+  c.append(el("p","selo","Leva 1 minuto"));
+  palco.append(c);
+}
+
+/* --- perguntas --- */
+function render(){
+  const p = PASSOS[i];
+  festao.hidden = conta.hidden = btnVoltar.hidden = false;
+  rodape.hidden = false;
+  btnPular.hidden = !p.pular;
+  progresso();
+  palco.scrollTop = 0;
+  palco.className = "entra";
+  palco.innerHTML = "";
+
+  const banda = fazBanda(p.banda, p.art);
+
+  const f = el("div","folha");
+  f.append(el("h1","",p.q));
+  if(p.dica) f.append(el("p","dica",p.dica));
+
+  if(p.tipo === "unica"){
+    const lista = el("div","lista");
+    p.ops.forEach(o=>{
+      const b = el("button","op");
+      b.type = "button";
+      b.setAttribute("aria-pressed", R[p.id]===o.v);
+      b.innerHTML = `<span class="txt">${o.v}${o.sub?`<span class="sub">${o.sub}</span>`:""}</span>${check}`;
+      b.onclick = ()=>{
+        R[p.id] = o.v;
+        lista.querySelectorAll(".op").forEach(x=>x.setAttribute("aria-pressed","false"));
+        b.setAttribute("aria-pressed","true");
+        btn.disabled = false;
+        if(navigator.vibrate) navigator.vibrate(8);
+        setTimeout(adiante, 300);
+      };
+      lista.append(b);
+    });
+    f.append(lista);
+    btn.textContent = "Continuar";
+    btn.disabled = !R[p.id];
+  }
+
+  if(p.tipo === "chips"){
+    R[p.id] = R[p.id] || [];
+    const box = el("div","chips");
+    p.ops.forEach(o=>{
+      const b = el("button","chip",o.v);
+      b.type = "button";
+      b.setAttribute("aria-pressed", R[p.id].includes(o.v));
+      b.onclick = ()=>{
+        const sel = R[p.id];
+        const at = sel.indexOf(o.v);
+        if(at > -1) sel.splice(at,1);
+        else{
+          if(p.max && sel.length >= p.max) sel.shift();
+          sel.push(o.v);
+        }
+        box.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", sel.includes(x.textContent)));
+        btn.disabled = sel.length === 0;
+        if(navigator.vibrate) navigator.vibrate(8);
+      };
+      box.append(b);
+    });
+    f.append(box);
+    btn.textContent = "Continuar";
+    btn.disabled = R[p.id].length === 0;
+  }
+
+  if(p.tipo === "campos"){
+    const box = el("div","lista");
+    p.campos.forEach(c=>{
+      const campo = el("div","campo");
+      const id = "c_"+c.k;
+      const lab = el("label","",c.label); lab.htmlFor = id;
+      const inp = c.area ? el("textarea") : el("input");
+      inp.id = id; inp.placeholder = c.ph; inp.value = R[c.k] || "";
+      if(c.tipo) inp.type = c.tipo;
+      if(c.tipo === "tel") inp.inputMode = "tel";
+      inp.oninput = ()=>{ R[c.k] = inp.value.trim(); valida(p); };
+      campo.append(lab, inp);
+      box.append(campo);
+    });
+    f.append(box);
+    btn.textContent = (i === PASSOS.length-1) ? "Ver minha proposta" : "Continuar";
+    valida(p);
+  }
+
+  palco.append(banda, f);
+  btn.onclick = adiante;
+  btnPular.onclick = fechar;
+  btnVoltar.onclick = ()=>{ if(i===0){ abertura(); } else { i--; render(); } };
+}
+
+function valida(p){
+  btn.disabled = p.campos.some(c => c.req && !(R[c.k]||"").trim());
+}
+
+function adiante(){
+  if(btn.disabled) return;
+  if(i < PASSOS.length-1){ i++; render(); }
+  else fechar();
+}
+
+/* --- tela de espera --- */
+function fechar(){
+  rodape.hidden = true;
+  festao.hidden = conta.hidden = btnVoltar.hidden = true;
+  const c = el("div","carregando");
+  c.style.setProperty("--tinta-arte","#FFF6E9");
+  c.innerHTML = `<svg viewBox="0 0 140 152" class="balanca">${ART.festa}</svg>`;
+  const h = el("h2","","Montando sua árvore…");
+  c.append(h);
+  const frases = ["Montando sua árvore…","Escolhendo a paleta…","Separando os enfeites…","Conferindo a agenda…"];
+  let k = 0;
+  const troca = setInterval(()=>{ k++; h.textContent = frases[k % frases.length]; }, 700);
+  app.append(c);
+  setTimeout(()=>{ clearInterval(troca); c.remove(); resultado(); }, 2600);
+}
+
+/* --- resultado --- */
+const RESUMO = [
+  ["Local","local"],["Árvore","tem"],["Tamanho","tamanho"],["Enfeites","enfeites"],
+  ["Estilo","estilo"],["Convívio","convivio"],["Serviço","servico"],["Também quero","extras"],
+  ["Prazo","quando"],["Investimento","investimento"],["Região","regiao"]
+];
+
+function resultado(){
+  palco.scrollTop = 0;
+  palco.className = "entra";
+  palco.innerHTML = "";
+  rodape.hidden = false;
+  festao.hidden = conta.hidden = btnVoltar.hidden = true;
+  const nome = R.nome ? R.nome.trim().split(" ")[0] : "";
+
+  const banda = fazBanda("indigo","festa");
+
+  const f = el("div","folha");
+  f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
+  f.append(el("p","dica","Esse é o briefing da sua árvore. Manda pra gente no WhatsApp que voltamos com a proposta e os prazos."));
+
+  const fichas = el("div","fichas");
+  RESUMO.forEach(([rot,k])=>{
+    const v = R[k];
+    if(!v || (Array.isArray(v) && !v.length)) return;
+    (Array.isArray(v) ? v : [v]).forEach(item=>{
+      const ch = el("span","ficha");
+      ch.innerHTML = `<b>${rot}</b>`;
+      ch.append(document.createTextNode(item));
+      fichas.append(ch);
+    });
+  });
+  f.append(fichas);
+
+  const av = el("div","aviso");
+  av.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l3.5 2"/></svg>`;
+  av.append(document.createTextNode("Novembro lota rápido: as agendas de montagem da segunda quinzena costumam fechar primeiro."));
+  f.append(av);
+
+  const lojas = el("div","lojas");
+  lojas.innerHTML = "<b>Nossas lojas</b>";
+  lojas.append(el("span","","Av. Moreira Lima — Centro"), el("span","","Av. Julio Marques Luz, 1149 — Jatiúca"));
+  f.append(lojas);
+
+  palco.append(banda, f);
+
+  btn.textContent = "Enviar no WhatsApp";
+  btn.disabled = false;
+  btn.onclick = ()=>{ window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`,"_blank","noopener"); };
+
+  btnPular.hidden = false;
+  btnPular.textContent = "Refazer o quiz";
+  btnPular.onclick = ()=>{ Object.keys(R).forEach(k=>delete R[k]); i=0; abertura(); };
+
+  confete();
+}
+
+function mensagem(){
+  const L = ["Oi, Gaivotta! Fiz o quiz da árvore de Natal 🎄",""];
+  if(R.nome) L.push(`Nome: ${R.nome}`);
+  RESUMO.forEach(([rot,k])=>{
+    const v = R[k];
+    if(!v || (Array.isArray(v) && !v.length)) return;
+    L.push(`${rot}: ${Array.isArray(v) ? v.join(", ") : v}`);
+  });
+  if(R.obs) L.push(`Recado: ${R.obs}`);
+  return L.join("\n");
+}
+
+/* --- confete --- */
+function confete(){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = el("canvas"); cv.id = "confete";
+  app.append(cv);
+  const ctx = cv.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const L = app.clientWidth, A = app.clientHeight;
+  cv.width = L*dpr; cv.height = A*dpr; ctx.scale(dpr,dpr);
+
+  const cores = [C.vermelho, C.dourado, C.sol, C.verde, C.creme];
+  const pecas = Array.from({length:70}, (_,n)=>({
+    x: L*(0.15 + 0.7*((n*37%100)/100)),
+    y: -20 - (n%14)*26,
+    l: 6 + (n%5)*2.2,
+    a: (n%360)*Math.PI/180,
+    va: (n%2?1:-1)*(0.06 + (n%5)*0.015),
+    vx: ((n%7)-3)*0.28,
+    vy: 1.8 + (n%6)*0.34,
+    cor: cores[n % cores.length]
+  }));
+
+  let quadros = 0;
+  (function anima(){
+    ctx.clearRect(0,0,L,A);
+    pecas.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.a += p.va; p.vy += 0.016;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+      ctx.fillStyle = p.cor;
+      ctx.fillRect(-p.l/2, -p.l/3, p.l, p.l*0.66);
+      ctx.restore();
+    });
+    if(++quadros < 230) requestAnimationFrame(anima);
+    else cv.remove();
+  })();
+}
+
+abertura();
+</script>
