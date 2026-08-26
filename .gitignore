@@ -7,3 +7,4 @@
 *.png
 *.pdf
 .DS_Store
+!capa.png
