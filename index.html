@@ -148,7 +148,15 @@
   .op[aria-pressed="true"] .marca svg{opacity:1;animation:selo .3s cubic-bezier(.3,1.7,.5,1) both}
   @keyframes selo{from{transform:scale(.4)}to{transform:scale(1)}}
 
+  .grupo{display:flex;flex-direction:column;gap:9px}
+  .rotulo{
+    font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--tinta-suave);font-weight:700;
+  }
   .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip.ic{display:inline-flex;align-items:center;gap:8px}
+  .chip.ic svg{width:17px;height:17px;flex:none;opacity:.8}
+  .chip.ic[aria-pressed="true"] svg{opacity:1;color:var(--indigo)}
   .chip{
     padding:12px 16px;min-height:48px;
     border:2px solid var(--borda);border-radius:999px;
@@ -527,6 +535,20 @@ const PASSOS = [
       {v:"Só pesquisando por enquanto"}
     ]},
 
+  { id:"agenda", tipo:"agenda", art:"calendario", banda:"neve",
+    se: r => r.quando === "O quanto antes",
+    q:"Quando podemos ir até você?",
+    dica:"Marque tudo que serve — a gente te encaixa na primeira janela livre da equipe.",
+    grupos:[
+      {k:"dias", rot:"Dias", ops:[
+        {v:"Seg"},{v:"Ter"},{v:"Qua"},{v:"Qui"},{v:"Sex"},{v:"Sáb"},{v:"Qualquer dia"}
+      ]},
+      {k:"horarios", rot:"Horários", ops:[
+        {v:"Manhã", ic:"manha"},{v:"Tarde", ic:"tarde"},
+        {v:"Fim da tarde", ic:"tarde"},{v:"Noite", ic:"noite"},{v:"Tanto faz"}
+      ]}
+    ]},
+
   { id:"investimento", tipo:"unica", art:"etiqueta", banda:"dourado",
     q:"Quanto você pensou em investir?",
     dica:"Sem compromisso — serve pra montarmos uma proposta que cabe no seu bolso.",
@@ -558,6 +580,25 @@ const PASSOS = [
 
 const LUZES = ["#D2342A","#F0A02C","#1B5A3C","#D9A93B","#2E1C6F"];
 
+/* ícones dos horários */
+const IC = {
+  manha:`<path d="M17 18a5 5 0 0 0-10 0"/><path d="M12 3v4M4.6 10.6l1.4 1.4M1.5 18h2M20.5 18h2M18 12l1.4-1.4M2.5 22h19"/>`,
+  tarde:`<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M6.5 17.5l-1.6 1.6M19.1 4.9l-1.6 1.6"/>`,
+  noite:`<path d="M21 12.9A9 9 0 1 1 11.1 3a7 7 0 0 0 9.9 9.9Z"/>`
+};
+const icone = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
+
+/* passos visíveis — alguns só aparecem conforme as respostas */
+let VIS = PASSOS.slice();
+function atualizaVis(){
+  VIS = PASSOS.filter(p => !p.se || p.se(R));
+  // um passo que saiu de cena não pode deixar resposta pra trás
+  PASSOS.forEach(p=>{
+    if(VIS.includes(p)) return;
+    (p.grupos ? p.grupos.map(g=>g.k) : [p.id]).forEach(k=>delete R[k]);
+  });
+}
+
 /* --- estado --- */
 const R = {};
 let i = 0;
@@ -584,9 +625,10 @@ function fazBanda(nome, art){
 }
 
 /* --- festão --- */
-const bulbos = [];
-(function montaFestao(){
-  const n = PASSOS.length;
+let bulbos = [];
+function montaFestao(n){
+  bulbos.forEach(b=>b.remove());
+  bulbos = [];
   for(let k=0;k<n;k++){
     const t = k/(n-1);
     const y = (1-t)*(1-t)*6 + 2*t*(1-t)*22 + t*t*6;   // acompanha a curva do fio
@@ -596,16 +638,18 @@ const bulbos = [];
     festao.append(b);
     bulbos.push(b);
   }
-})();
+}
+montaFestao(PASSOS.length);
 
 function progresso(){
+  if(bulbos.length !== VIS.length) montaFestao(VIS.length);
   bulbos.forEach((b,k)=>{
     const acesa = k < i;
     b.classList.toggle("on", acesa);
     b.style.background = acesa ? LUZES[k % LUZES.length] : "";
     b.style.boxShadow = acesa ? `0 0 10px ${LUZES[k % LUZES.length]}99` : "";
   });
-  conta.textContent = Math.min(i+1, PASSOS.length) + " de " + PASSOS.length;
+  conta.textContent = Math.min(i+1, VIS.length) + " de " + VIS.length;
 }
 
 /* --- abertura --- */
@@ -632,7 +676,9 @@ function abertura(){
 
 /* --- perguntas --- */
 function render(){
-  const p = PASSOS[i];
+  atualizaVis();
+  if(i > VIS.length-1) i = VIS.length-1;
+  const p = VIS[i];
   festao.hidden = conta.hidden = btnVoltar.hidden = false;
   rodape.hidden = false;
   btnPular.hidden = !p.pular;
@@ -695,6 +741,36 @@ function render(){
     btn.disabled = R[p.id].length === 0;
   }
 
+  if(p.tipo === "agenda"){
+    const val = ()=> btn.disabled = p.grupos.some(g => !(R[g.k]||[]).length);
+    p.grupos.forEach(g=>{
+      R[g.k] = R[g.k] || [];
+      const grupo = el("div","grupo");
+      grupo.append(el("span","rotulo",g.rot));
+      const box = el("div","chips");
+      g.ops.forEach(o=>{
+        const b = el("button","chip" + (o.ic ? " ic" : ""));
+        b.type = "button";
+        b.innerHTML = (o.ic ? icone(o.ic) : "") + `<span>${o.v}</span>`;
+        b.setAttribute("aria-pressed", R[g.k].includes(o.v));
+        b.onclick = ()=>{
+          const sel = R[g.k];
+          const at = sel.indexOf(o.v);
+          if(at > -1) sel.splice(at,1); else sel.push(o.v);
+          box.querySelectorAll(".chip").forEach(x=>
+            x.setAttribute("aria-pressed", sel.includes(x.querySelector("span").textContent)));
+          val();
+          if(navigator.vibrate) navigator.vibrate(8);
+        };
+        box.append(b);
+      });
+      grupo.append(box);
+      f.append(grupo);
+    });
+    btn.textContent = "Continuar";
+    val();
+  }
+
   if(p.tipo === "campos"){
     const box = el("div","lista");
     p.campos.forEach(c=>{
@@ -710,7 +786,7 @@ function render(){
       box.append(campo);
     });
     f.append(box);
-    btn.textContent = (i === PASSOS.length-1) ? "Ver minha proposta" : "Continuar";
+    btn.textContent = (i === VIS.length-1) ? "Ver minha proposta" : "Continuar";
     valida(p);
   }
 
@@ -726,7 +802,8 @@ function valida(p){
 
 function adiante(){
   if(btn.disabled) return;
-  if(i < PASSOS.length-1){ i++; render(); }
+  atualizaVis();
+  if(i < VIS.length-1){ i++; render(); }
   else fechar();
 }
 
@@ -750,7 +827,8 @@ function fechar(){
 const RESUMO = [
   ["Local","local"],["Árvore","tem"],["Tamanho","tamanho"],["Enfeites","enfeites"],
   ["Estilo","estilo"],["Convívio","convivio"],["Serviço","servico"],["Também quero","extras"],
-  ["Prazo","quando"],["Investimento","investimento"],["Região","regiao"]
+  ["Prazo","quando"],["Dias","dias"],["Horários","horarios"],
+  ["Investimento","investimento"],["Região","regiao"]
 ];
 
 function resultado(){
@@ -768,10 +846,12 @@ function resultado(){
   f.append(el("p","dica","Esse é o briefing da sua árvore. Manda pra gente no WhatsApp que voltamos com a proposta e os prazos."));
 
   const fichas = el("div","fichas");
+  const JUNTOS = new Set(["dias","horarios"]);   // cabem numa ficha só
   RESUMO.forEach(([rot,k])=>{
     const v = R[k];
     if(!v || (Array.isArray(v) && !v.length)) return;
-    (Array.isArray(v) ? v : [v]).forEach(item=>{
+    const lista = (Array.isArray(v) && !JUNTOS.has(k)) ? v : [Array.isArray(v) ? v.join(", ") : v];
+    lista.forEach(item=>{
       const ch = el("span","ficha");
       ch.innerHTML = `<b>${rot}</b>`;
       ch.append(document.createTextNode(item));
