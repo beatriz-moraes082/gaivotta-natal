@@ -27,6 +27,48 @@ oferece **montagem no local** e a pergunta da árvore oferece **aluguel para a t
 Se a loja não fizer algum dos dois, apague a opção antes de publicar — prometer no quiz e
 negar no atendimento queima a lead.
 
+## Ligando a agenda (a cliente escolhe o horário)
+
+O quiz pode terminar na agenda da loja em vez de terminar no WhatsApp: a cliente escolhe
+um horário livre de verdade e o evento cai no Google Agenda de vocês, já com o briefing
+dela nas observações. Enquanto isso não estiver configurado, o quiz continua terminando
+no WhatsApp normalmente — nada quebra.
+
+**Passo 1.** Criar uma conta em [cal.com](https://cal.com) com o e-mail da loja e conectar
+o Google Agenda (Apps → Google Calendar). É o que faz o Cal enxergar os compromissos que
+já existem e nunca oferecer um horário ocupado.
+
+**Passo 2.** Criar quatro tipos de evento, com estes apelidos e durações:
+
+| Apelido (o texto que vai na URL) | Duração | Quando é usado |
+| --- | --- | --- |
+| `visita-tecnica` | 30 min | Projeto completo, ou quando a cliente não sabe o tamanho |
+| `montagem-ate-180` | 1h30 | Árvores de até 1,80 m |
+| `montagem-210-240` | 2h30 | Árvores de 2,10 m a 2,40 m |
+| `montagem-3m` | 4h | Árvores de 3 m ou mais, lojas e pé-direito alto |
+
+As durações são um chute inicial, feito pra ser corrigido: depois das primeiras montagens
+de novembro, ajustem com o tempo real. Em cada tipo de evento vale configurar também o
+intervalo entre atendimentos (deslocamento pela cidade), a antecedência mínima e quantas
+montagens cabem por dia.
+
+**Passo 3.** No `index.html`, preencher o usuário do Cal:
+
+```js
+const CAL = {
+  usuario: "gaivotta",   // o que aparece em cal.com/gaivotta
+```
+
+Feito isso, quem escolhe **Montagem no local**, **Montagem e desmontagem** ou **Projeto
+completo** passa a ver "Escolher dia e horário" no fim do quiz, com o WhatsApp como
+segunda opção. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
+WhatsApp, porque não ocupa equipe.
+
+### O que ainda é manual
+
+A desmontagem de janeiro não é agendada pelo quiz — quem marca "Montagem e desmontagem"
+agenda só a ida. A volta é combinada no atendimento.
+
 ## Editando as perguntas
 
 As perguntas ficam no array `PASSOS`, dentro de `index.html`. Cada item é uma tela:

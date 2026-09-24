@@ -283,6 +283,16 @@
     line-height:1.45;color:var(--tinta-suave);
   }
   .lojas b{color:var(--tinta);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase}
+  .outro{
+    display:flex;align-items:center;gap:10px;width:100%;
+    padding:14px 16px;border:2px solid var(--borda);border-radius:16px;
+    background:var(--cartao);color:var(--tinta);
+    font:inherit;font-size:15px;font-weight:500;text-align:left;cursor:pointer;
+    transition:border-color .15s,transform .12s;
+  }
+  .outro:hover{border-color:var(--tinta-suave)}
+  .outro:active{transform:scale(.99)}
+  .outro svg{flex:none;width:21px;height:21px;color:var(--ok, #2E8055)}
 
   /* ---------- entradas ---------- */
   .entra .banda svg{animation:pula .5s cubic-bezier(.25,1.5,.45,1) both}
@@ -334,6 +344,45 @@
    Formato: 55 + DDD + número, só dígitos.
    =================================================================== */
 const WHATSAPP = "5599999999999";
+
+/* ===================================================================
+   AGENDAMENTO REAL (Cal.com conectado ao Google Agenda da loja)
+   Enquanto `usuario` estiver vazio, o quiz termina no WhatsApp, como hoje.
+   Preencha com o usuário da conta (o que aparece em cal.com/SEU-USUARIO)
+   e confira se os apelidos abaixo batem com os tipos de evento criados lá.
+   O passo a passo está no README.
+   =================================================================== */
+const CAL = {
+  usuario: "",
+  tipos: {
+    visita:   "visita-tecnica",      //  30 min — projeto completo ou tamanho indefinido
+    pequena:  "montagem-ate-180",    // 1h30   — até 1,80 m
+    media:    "montagem-210-240",    // 2h30   — 2,10 m a 2,40 m
+    grande:   "montagem-3m"          //   4h   — 3 m ou mais, loja, pé-direito alto
+  }
+};
+
+/* qual tipo de evento abrir, conforme o serviço e o tamanho escolhidos */
+function tipoAgenda(){
+  if(!CAL.usuario) return null;
+  const s = R.servico || "";
+  if(s === "Projeto completo") return CAL.tipos.visita;          // começa por visita, não por montagem
+  if(!s.startsWith("Montagem")) return null;                     // só materiais ou kit pronto não ocupam equipe
+  const t = R.tamanho || "";
+  if(t === "Não sei ainda") return CAL.tipos.visita;             // sem medida não dá pra reservar janela
+  if(t === "3 m ou mais") return CAL.tipos.grande;
+  if(t === "2,10 m a 2,40 m") return CAL.tipos.media;
+  return CAL.tipos.pequena;
+}
+
+function linkAgenda(){
+  const tipo = tipoAgenda();
+  if(!tipo) return null;
+  const q = new URLSearchParams();
+  if(R.nome) q.set("name", R.nome);
+  q.set("notes", mensagem());
+  return `https://cal.com/${CAL.usuario}/${tipo}?${q}`;
+}
 
 /* paleta: marca (indigo + sol) + Natal Gaivotta (vermelho, dourado, verde) */
 const C = {
@@ -863,9 +912,16 @@ function resultado(){
 
   const banda = fazBanda("indigo","festa");
 
+  const agenda = linkAgenda();
+  const visita = agenda && agenda.includes(CAL.tipos.visita);
+
   const f = el("div","folha");
   f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
-  f.append(el("p","dica","Esse é o briefing da sua árvore. Manda pra gente no WhatsApp que voltamos com a proposta e os prazos."));
+  f.append(el("p","dica", agenda
+    ? (visita
+        ? "Esse é o briefing da sua árvore. Agora escolha um horário pra nossa visita — a gente mede o espaço e fecha a proposta na hora."
+        : "Esse é o briefing da sua árvore. Agora é só escolher o dia e a hora da montagem na nossa agenda.")
+    : "Esse é o briefing da sua árvore. Manda pra gente no WhatsApp que voltamos com a proposta e os prazos."));
 
   const fichas = el("div","fichas");
   const JUNTOS = new Set(["dias","horarios"]);   // cabem numa ficha só
@@ -892,11 +948,21 @@ function resultado(){
   lojas.append(el("span","","Av. Moreira Lima — Centro"), el("span","","Av. Julio Marques Luz, 1149 — Jatiúca"));
   f.append(lojas);
 
+  const zap = ()=> window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`,"_blank","noopener");
+
+  if(agenda){
+    const outro = el("button","outro");
+    outro.type = "button";
+    outro.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 20.5l1.5-4.9a8.4 8.4 0 0 1-1-4.1 8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 8.4Z"/></svg><span>Prefere combinar por mensagem? Falar no WhatsApp</span>`;
+    outro.onclick = zap;
+    f.insertBefore(outro, lojas);
+  }
+
   palco.append(banda, f);
 
-  btn.textContent = "Enviar no WhatsApp";
+  btn.textContent = agenda ? (visita ? "Escolher horário da visita" : "Escolher dia e horário") : "Enviar no WhatsApp";
   btn.disabled = false;
-  btn.onclick = ()=>{ window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`,"_blank","noopener"); };
+  btn.onclick = agenda ? ()=> window.open(agenda,"_blank","noopener") : zap;
 
   btnPular.hidden = false;
   btnPular.textContent = "Refazer o quiz";
