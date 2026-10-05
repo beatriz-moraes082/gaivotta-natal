@@ -1,12 +1,18 @@
 # Quiz da Árvore de Natal — Gaivotta
 
-Página mobile de captação de demanda de árvore de Natal. A cliente responde 12 perguntas
+Página mobile de captação de demanda de árvore de Natal. A cliente responde 8 perguntas
 rápidas (uma por tela) e, no final, a página monta o briefing e abre o WhatsApp da loja
-com tudo já escrito — tamanho, estilo, prazo, região e o que ela precisa.
+com tudo já escrito — serviço, tamanho, estilo, prazo e região.
+
+As perguntas são: onde vai ficar, do que ela precisa da loja, se já tem a árvore, tamanho,
+enfeites, estilo, e os dados de contato. Duas aparecem só quando fazem sentido: **região**
+entra para quem vai receber equipe em casa, e **prazo** só para quem não vai marcar um
+horário de verdade no fim (ver a seção da agenda abaixo).
 
 Feito para rodar no celular, para colar na bio do Instagram e nos stories.
 
 - Uma pergunta por tela, com ilustração e cor próprias
+- O contador e o festão se ajustam sozinhos ao caminho de cada pessoa
 - Resposta única avança sozinha no toque (menos fricção que um formulário)
 - Festão de luzes no topo como barra de progresso
 - Tudo em um arquivo só, sem build, sem servidor, sem banco de dados

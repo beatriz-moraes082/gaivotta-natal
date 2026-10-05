@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2E1C6F">
 <title>Monte Sua Árvore · Gaivotta</title>
-<meta name="description" content="Responda 12 perguntinhas e a Gaivotta volta no WhatsApp com tamanho, paleta, lista de materiais e prazo da sua árvore de Natal.">
+<meta name="description" content="Responda algumas perguntas rápidas e a Gaivotta volta no WhatsApp com tamanho, paleta, lista de materiais e prazo da sua árvore de Natal.">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gaivotta">
 <meta property="og:title" content="Sua árvore de Natal, montada do seu jeito">
-<meta property="og:description" content="12 perguntinhas rápidas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo.">
+<meta property="og:description" content="Poucas perguntas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo.">
 <meta property="og:url" content="https://beatriz-moraes082.github.io/gaivotta-natal/">
 <meta property="og:image" content="https://beatriz-moraes082.github.io/gaivotta-natal/capa.png">
 <meta property="og:image:width" content="1200">
@@ -363,11 +363,16 @@ const CAL = {
 };
 
 /* qual tipo de evento abrir, conforme o serviço e o tamanho escolhidos */
+/* ocupa equipe? só materiais e kit pronto a cliente monta sozinha */
+function precisaMontagem(r){
+  const s = (r || R).servico || "";
+  return s.startsWith("Montagem") || s === "Projeto completo";
+}
+
 function tipoAgenda(){
-  if(!CAL.usuario) return null;
+  if(!CAL.usuario || !precisaMontagem()) return null;
   const s = R.servico || "";
   if(s === "Projeto completo") return CAL.tipos.visita;          // começa por visita, não por montagem
-  if(!s.startsWith("Montagem")) return null;                     // só materiais ou kit pronto não ocupam equipe
   const t = R.tamanho || "";
   if(t === "Não sei ainda") return CAL.tipos.visita;             // sem medida não dá pra reservar janela
   if(t === "3 m ou mais") return CAL.tipos.grande;
@@ -529,6 +534,16 @@ const PASSOS = [
       {v:"Condomínio, igreja ou evento", sub:"Área comum, pé-direito alto"}
     ]},
 
+  { id:"servico", tipo:"unica", art:"escada", banda:"indigo",
+    q:"Do que você precisa da gente?",
+    ops:[
+      {v:"Só os materiais", sub:"A montagem é comigo mesmo"},
+      {v:"Kit pronto", sub:"Tudo separado e combinado, eu monto"},
+      {v:"Montagem no local", sub:"Equipe vai até você"},
+      {v:"Montagem e desmontagem", sub:"Guardamos tudo em janeiro"},
+      {v:"Projeto completo", sub:"Árvore, ambientes e vitrine"}
+    ]},
+
   { id:"tem", tipo:"unica", art:"arvore", banda:"creme",
     q:"Você já tem a árvore?",
     ops:[
@@ -568,67 +583,9 @@ const PASSOS = [
       {v:"Me surpreende"}
     ]},
 
-  { id:"convivio", tipo:"unica", art:"gato", banda:"dourado",
-    q:"Alguém vai querer brincar com ela?",
-    dica:"Criança pequena, gato curioso ou movimento de loja pedem enfeite que não quebra.",
-    ops:[
-      {v:"Sim, criança pequena em casa"},
-      {v:"Sim, pet curioso", sub:"Já derrubou antes, confessa"},
-      {v:"Passa muita gente perto", sub:"Loja, corredor, área comum"},
-      {v:"Não, pode ser delicada"}
-    ]},
-
-  { id:"servico", tipo:"unica", art:"escada", banda:"indigo",
-    q:"Do que você precisa da gente?",
-    ops:[
-      {v:"Só os materiais", sub:"A montagem é comigo mesmo"},
-      {v:"Kit pronto", sub:"Tudo separado e combinado, eu monto"},
-      {v:"Montagem no local", sub:"Equipe vai até você"},
-      {v:"Montagem e desmontagem", sub:"Guardamos tudo em janeiro"},
-      {v:"Projeto completo", sub:"Árvore, ambientes e vitrine"}
-    ]},
-
-  { id:"extras", tipo:"chips", art:"guirlanda", banda:"creme",
-    q:"Além da árvore, o que mais entra na festa?",
-    dica:"Pode escolher quantos quiser.",
-    ops:[
-      {v:"Guirlanda de porta"},{v:"Mesa posta"},{v:"Escada ou corrimão"},
-      {v:"Vitrine"},{v:"Fachada"},{v:"Presépio"},{v:"Só a árvore mesmo"}
-    ]},
-
-  { id:"quando", tipo:"unica", art:"calendario", banda:"pinho",
-    q:"Quando você quer tudo montado?",
-    ops:[
-      {v:"O quanto antes", sub:"Ainda em outubro"},
-      {v:"Primeira quinzena de novembro"},
-      {v:"Segunda quinzena de novembro", sub:"O período mais concorrido"},
-      {v:"Começo de dezembro"},
-      {v:"Só pesquisando por enquanto"}
-    ]},
-
-  { id:"agenda", tipo:"agenda", art:"calendario", banda:"neve",
-    se: r => r.quando === "O quanto antes",
-    q:"Quando podemos ir até você?",
-    dica:"Marque tudo que serve — a gente te encaixa na primeira janela livre da equipe.",
-    grupos:[
-      {k:"dias", rot:"Dias", ops:[
-        {v:"Seg"},{v:"Ter"},{v:"Qua"},{v:"Qui"},{v:"Sex"},{v:"Sáb"},{v:"Qualquer dia"}
-      ]},
-      {k:"horarios", rot:"Horários", ops:[
-        {v:"Manhã", ic:"manha"},{v:"Tarde", ic:"tarde"},
-        {v:"Fim da tarde", ic:"tarde"},{v:"Noite", ic:"noite"},{v:"Tanto faz"}
-      ]}
-    ]},
-
-  { id:"investimento", tipo:"unica", art:"etiqueta", banda:"dourado",
-    q:"Quanto você pensou em investir?",
-    dica:"Sem compromisso — serve pra montarmos uma proposta que cabe no seu bolso.",
-    ops:[
-      {v:"Até R$ 300"},{v:"R$ 300 a R$ 800"},{v:"R$ 800 a R$ 2.000"},
-      {v:"R$ 2.000 a R$ 5.000"},{v:"Acima de R$ 5.000"},{v:"Prefiro conversar antes"}
-    ]},
-
-  { id:"regiao", tipo:"unica", art:"pino", banda:"cereja",
+  // só para quem vai receber equipe em casa: define se a montagem chega até lá
+  { id:"regiao", tipo:"unica", art:"pino", banda:"dourado",
+    se: precisaMontagem,
     q:"Você está por onde?",
     dica:"A montagem no local sai das nossas duas lojas: Centro e Jatiúca.",
     ops:[
@@ -637,6 +594,18 @@ const PASSOS = [
       {v:"Outro bairro de Maceió"},
       {v:"Região metropolitana", sub:"Rio Largo, Marechal, Barra"},
       {v:"Outra cidade"}
+    ]},
+
+  // quem marca horário de verdade no fim já responde isso escolhendo a data
+  { id:"quando", tipo:"unica", art:"calendario", banda:"dourado",
+    se: r => !precisaMontagem(r) || !CAL.usuario,
+    q:"Quando você quer tudo pronto?",
+    ops:[
+      {v:"O quanto antes"},
+      {v:"Primeira quinzena de novembro"},
+      {v:"Segunda quinzena de novembro", sub:"O período mais concorrido"},
+      {v:"Começo de dezembro"},
+      {v:"Só pesquisando por enquanto"}
     ]},
 
   { id:"contato", tipo:"campos", art:"conversa", banda:"indigo",
@@ -740,7 +709,8 @@ function abertura(){
   arv.innerHTML = `<svg class="arv" viewBox="0 0 140 152">${ART.arvore}</svg>`;
   c.append(marca, arv.firstElementChild);
   c.append(el("h1","","Sua árvore de Natal, montada do seu jeito."));
-  c.append(el("p","","12 perguntinhas rápidas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo."));
+  atualizaVis();
+  c.append(el("p","",`${VIS.length} perguntinhas rápidas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo.`));
   c.append(el("p","selo","Leva 1 minuto"));
   palco.append(c);
 }
@@ -896,10 +866,8 @@ function fechar(){
 
 /* --- resultado --- */
 const RESUMO = [
-  ["Local","local"],["Árvore","tem"],["Tamanho","tamanho"],["Enfeites","enfeites"],
-  ["Estilo","estilo"],["Convívio","convivio"],["Serviço","servico"],["Também quero","extras"],
-  ["Prazo","quando"],["Dias","dias"],["Horários","horarios"],
-  ["Investimento","investimento"],["Região","regiao"]
+  ["Local","local"],["Serviço","servico"],["Árvore","tem"],["Tamanho","tamanho"],
+  ["Enfeites","enfeites"],["Estilo","estilo"],["Região","regiao"],["Prazo","quando"]
 ];
 
 function resultado(){
