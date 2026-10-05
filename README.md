@@ -58,14 +58,15 @@ de novembro, ajustem com o tempo real. Em cada tipo de evento vale configurar ta
 intervalo entre atendimentos (deslocamento pela cidade), a antecedência mínima e quantas
 montagens cabem por dia.
 
-**Passo 3.** No `index.html`, preencher o usuário do Cal:
+**Passo 3.** Já feito: a conta é `cal.com/gaivotta`, com os quatro tipos de evento
+criados, local definido como endereço do participante, 24h de aviso mínimo e intervalo de
+60 minutos para deslocamento (30 na visita). O limite por dia começou em 4 visitas, 3
+montagens pequenas, 2 médias e 1 grande — ajustar conforme a equipe aguentar.
 
-```js
-const CAL = {
-  usuario: "gaivotta",   // o que aparece em cal.com/gaivotta
-```
+A disponibilidade está **segunda a sexta, 9h às 17h**. Sábado não aparece para a cliente
+enquanto não for incluído em Disponibilidade.
 
-Feito isso, quem escolhe **Montagem no local**, **Montagem e desmontagem** ou **Projeto
+Quem escolhe **Montagem no local**, **Montagem e desmontagem** ou **Projeto
 completo** passa a ver "Escolher dia e horário" no fim do quiz, com o WhatsApp como
 segunda opção. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
 WhatsApp, porque não ocupa equipe.
