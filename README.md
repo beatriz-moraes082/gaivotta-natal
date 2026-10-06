@@ -63,8 +63,8 @@ criados, local definido como endereço do participante, 24h de aviso mínimo e i
 60 minutos para deslocamento (30 na visita). O limite por dia começou em 4 visitas, 3
 montagens pequenas, 2 médias e 1 grande — ajustar conforme a equipe aguentar.
 
-A disponibilidade está **segunda a sexta, 9h às 17h**. Sábado não aparece para a cliente
-enquanto não for incluído em Disponibilidade.
+A disponibilidade está **segunda a sábado, 9h às 17h**. Para mudar, é em
+Disponibilidade → Working hours, no Cal.
 
 Quem escolhe **Montagem no local**, **Montagem e desmontagem** ou **Projeto
 completo** passa a ver "Escolher dia e horário" no fim do quiz, com o WhatsApp como
