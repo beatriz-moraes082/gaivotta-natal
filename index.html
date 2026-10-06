@@ -289,6 +289,35 @@
     border:2px solid var(--indigo);font-size:14.5px;font-weight:500;line-height:1.2;
   }
   .ficha b{font-weight:700;opacity:.6;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+  .orcamento{
+    border:2px solid var(--indigo);border-radius:18px;overflow:hidden;
+  }
+  .orcamento h2{
+    margin:0;padding:12px 16px;
+    background:var(--indigo);color:var(--indigo-txt);
+    font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .orcamento dl{margin:0;padding:6px 16px 14px}
+  .orcamento .linha{
+    display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+    padding:11px 0;border-bottom:1px solid var(--borda);
+  }
+  .orcamento .linha dt{font-size:15px;line-height:1.3}
+  .orcamento .linha dd{
+    margin:0;flex:none;font-size:15px;font-weight:500;
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .orcamento .total{border-bottom:none;padding-top:13px}
+  .orcamento .total dt{font-weight:700;font-size:16px}
+  .orcamento .total dd{
+    font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    font-weight:800;font-size:19px;letter-spacing:-.01em;
+  }
+  .ressalva{
+    margin:0;padding:12px 16px;background:var(--fundo);
+    font-size:13.5px;line-height:1.45;color:var(--tinta-suave);
+  }
   .aviso{
     display:flex;gap:11px;align-items:flex-start;
     background:color-mix(in srgb, var(--sol) 26%, var(--cartao));
@@ -535,6 +564,69 @@ const BANDAS = {
   neve:    {bg:"#E6E3F2", tinta:"#191430", tom:"#2E1C6F"},
   indigo:  {bg:"#2E1C6F", tinta:"#FFF6E9", tom:"#2E1C6F"}
 };
+
+/* ===================================================================
+   ESTIMATIVA DE VALOR
+   Enquanto `ativo` for false, o quiz não mostra preço nenhum.
+   Cada item é uma faixa [mínimo, máximo] em reais. A montagem é um valor
+   único (repita o mesmo número nos dois campos se não tiver faixa).
+   Quem responde "Não sei ainda" no tamanho não recebe estimativa: vai para
+   a visita técnica, onde o valor é fechado no lugar.
+   =================================================================== */
+const PRECOS = {
+  ativo: false,
+  arvore: {            // árvore nova, para quem vai comprar
+    "Até 1,50 m":      [null, null],
+    "1,80 m":          [null, null],
+    "2,10 m a 2,40 m": [null, null],
+    "3 m ou mais":     [null, null]
+  },
+  doZero: {            // enfeites completos, para quem não tem nada
+    "Até 1,50 m":      [null, null],
+    "1,80 m":          [null, null],
+    "2,10 m a 2,40 m": [null, null],
+    "3 m ou mais":     [null, null]
+  },
+  complemento: {       // renovar quem já tem uma base
+    "Até 1,50 m":      [null, null],
+    "1,80 m":          [null, null],
+    "2,10 m a 2,40 m": [null, null],
+    "3 m ou mais":     [null, null]
+  },
+  montagem: {          // mão de obra da equipe no local
+    "Até 1,50 m":      [null, null],
+    "1,80 m":          [null, null],
+    "2,10 m a 2,40 m": [null, null],
+    "3 m ou mais":     [null, null]
+  }
+};
+
+const reais = n => n.toLocaleString("pt-BR", {style:"currency", currency:"BRL", maximumFractionDigits:0});
+
+/* monta as linhas da estimativa a partir das respostas */
+function estimativa(){
+  const t = R.tamanho;
+  if(!PRECOS.ativo || !t || t === "Não sei ainda") return null;
+
+  const faixa = (tabela, rotulo) => {
+    const f = PRECOS[tabela][t];
+    return (f && f[0] != null && f[1] != null) ? {rotulo, min:f[0], max:f[1]} : null;
+  };
+
+  const linhas = [];
+  if(R.tem === "Quero comprar uma nova") linhas.push(faixa("arvore", `Árvore de ${t.toLowerCase()}`));
+  if(R.enfeites === "Começar do zero")   linhas.push(faixa("doZero", "Enfeites completos"));
+  if(R.enfeites === "Tenho uma base")    linhas.push(faixa("complemento", "Complemento de enfeites"));
+  if(R.servico === "Montagem no local")  linhas.push(faixa("montagem", "Montagem no local"));
+
+  const itens = linhas.filter(Boolean);
+  if(!itens.length) return null;
+  return {
+    itens,
+    min: itens.reduce((a,i)=>a+i.min, 0),
+    max: itens.reduce((a,i)=>a+i.max, 0)
+  };
+}
 
 /* os 50 bairros oficiais de Maceió, em ordem alfabética */
 const BAIRROS = [
@@ -952,6 +1044,24 @@ function resultado(){
   });
   f.append(fichas);
 
+  const est = estimativa();
+  if(est){
+    const card = el("div","orcamento");
+    card.append(el("h2","","Sua estimativa"));
+    const dl = el("dl");
+    est.itens.forEach(it=>{
+      const l = el("div","linha");
+      l.append(el("dt","",it.rotulo), el("dd","", it.min === it.max ? reais(it.min) : `${reais(it.min)} a ${reais(it.max)}`));
+      dl.append(l);
+    });
+    const tot = el("div","linha total");
+    tot.append(el("dt","","Total estimado"), el("dd","", est.min === est.max ? reais(est.min) : `${reais(est.min)} a ${reais(est.max)}`));
+    dl.append(tot);
+    card.append(dl);
+    card.append(el("p","ressalva","É uma faixa inicial, calculada pelo que você respondeu. O valor fechado sai na proposta, depois que a gente escolher as peças junto com você."));
+    f.append(card);
+  }
+
   const av = el("div","aviso");
   av.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l3.5 2"/></svg>`;
   av.append(document.createTextNode("Novembro lota rápido: as agendas de montagem da segunda quinzena costumam fechar primeiro."));
@@ -967,14 +1077,16 @@ function resultado(){
   if(agenda){
     const outro = el("button","outro");
     outro.type = "button";
-    outro.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 20.5l1.5-4.9a8.4 8.4 0 0 1-1-4.1 8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 8.4Z"/></svg><span>Prefere combinar por mensagem? Falar no WhatsApp</span>`;
+    outro.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 20.5l1.5-4.9a8.4 8.4 0 0 1-1-4.1 8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 8.4Z"/></svg><span>${est ? "Quer conversar sobre o valor antes? Falar no WhatsApp" : "Prefere combinar por mensagem? Falar no WhatsApp"}</span>`;
     outro.onclick = zap;
     f.insertBefore(outro, lojas);
   }
 
   palco.append(banda, f);
 
-  btn.textContent = agenda ? (visita ? "Escolher horário da visita" : "Escolher dia e horário") : "Enviar no WhatsApp";
+  btn.textContent = agenda
+    ? (visita ? "Escolher horário da visita" : (est ? "Está bom, escolher o horário" : "Escolher dia e horário"))
+    : (est ? "Está bom, falar no WhatsApp" : "Enviar no WhatsApp");
   btn.disabled = false;
   btn.onclick = agenda ? ()=> window.open(agenda,"_blank","noopener") : zap;
 

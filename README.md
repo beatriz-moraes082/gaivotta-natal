@@ -69,6 +69,27 @@ Quem escolhe **Montagem no local** vê "Escolher dia e horário" no fim do quiz,
 WhatsApp como segunda opção. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
 WhatsApp, porque não ocupa equipe.
 
+## Estimativa de valor
+
+Antes de escolher o horário, a cliente vê uma faixa de preço calculada a partir do que ela
+respondeu, e o botão de agendar vira um aceite ("Está bom, escolher o horário"). Quem quer
+discutir o valor tem o atalho do WhatsApp logo abaixo.
+
+Os preços ficam na constante `PRECOS`, no topo do `<script>`. Enquanto `ativo: false`,
+**nenhum valor aparece** e o quiz funciona como antes. Cada item é uma faixa
+`[mínimo, máximo]` em reais, por tamanho de árvore:
+
+- `arvore` — árvore nova, só entra na conta para quem responde "Quero comprar uma nova"
+- `doZero` — enfeites completos, para quem responde "Começar do zero"
+- `complemento` — renovação, para quem responde "Tenho uma base"
+- `montagem` — mão de obra; repita o mesmo número nos dois campos se for valor fixo
+
+Quem responde **"Não sei ainda"** no tamanho não recebe estimativa: esse caminho vai para a
+visita técnica, onde o valor é fechado no lugar.
+
+Mudou de preço no meio da temporada? É só editar os números e publicar; não tem nada de
+preço espalhado pelo resto do arquivo.
+
 ## Editando as perguntas
 
 As perguntas ficam no array `PASSOS`, dentro de `index.html`. Cada item é uma tela:
