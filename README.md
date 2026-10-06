@@ -23,10 +23,10 @@ Feito para rodar no celular, para colar na bio do Instagram e nos stories.
 de árvores. Para trocar, é a constante `WHATSAPP` no topo do `<script>` em `index.html`,
 só dígitos, no formato `55` + DDD + número.
 
-**2. Conferir as duas promessas do quiz.** A pergunta "Do que você precisa da gente?"
-oferece **montagem no local** e a pergunta da árvore oferece **aluguel para a temporada**.
-Se a loja não fizer algum dos dois, apague a opção antes de publicar — prometer no quiz e
-negar no atendimento queima a lead.
+**2. O que o quiz promete.** Ele oferece **montagem no local**, que a loja faz. **Aluguel
+de árvore foi removido** em 06/10/2026, porque a loja não aluga. Antes de incluir qualquer
+opção nova, confira se a operação entrega — prometer no quiz e negar no atendimento queima
+a lead.
 
 ## Ligando a agenda (a cliente escolhe o horário)
 
