@@ -192,6 +192,23 @@
     animation:selo .28s cubic-bezier(.3,1.7,.5,1) both;
   }
 
+  .campo-escolha{position:relative;display:flex}
+  .escolha{
+    appearance:none;-webkit-appearance:none;
+    width:100%;min-height:58px;padding:15px 48px 15px 16px;
+    border:2px solid var(--borda);border-radius:16px;
+    background:var(--cartao);color:var(--tinta);
+    font:inherit;font-size:16.5px;font-weight:500;cursor:pointer;
+    transition:border-color .15s;
+  }
+  .escolha:hover{border-color:var(--tinta-suave)}
+  .escolha:focus{outline:none;border-color:var(--indigo)}
+  .escolha:invalid{color:var(--tinta-suave);font-weight:400}
+  .seta{
+    position:absolute;right:16px;top:50%;margin-top:-10px;
+    width:20px;height:20px;pointer-events:none;color:var(--tinta-suave);
+  }
+
   .campo{display:flex;flex-direction:column;gap:7px}
   .campo label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-suave);font-weight:700}
   input,textarea{
@@ -519,6 +536,23 @@ const BANDAS = {
   indigo:  {bg:"#2E1C6F", tinta:"#FFF6E9", tom:"#2E1C6F"}
 };
 
+/* os 50 bairros oficiais de Maceió, em ordem alfabética */
+const BAIRROS = [
+  "Antares", "Barro Duro", "Bebedouro", "Benedito Bentes",
+  "Bom Parto", "Canaã", "Centro", "Chã da Jaqueira",
+  "Chã de Bebedouro", "Cidade Universitária", "Clima Bom", "Cruz das Almas",
+  "Farol", "Feitosa", "Fernão Velho", "Garça Torta",
+  "Gruta de Lourdes", "Guaxuma", "Ipioca", "Jacarecica",
+  "Jacintinho", "Jaraguá", "Jardim Petrópolis", "Jatiúca",
+  "Levada", "Mangabeiras", "Mutange", "Ouro Preto",
+  "Pajuçara", "Pescaria", "Petrópolis", "Pinheiro",
+  "Pitanguinha", "Poço", "Ponta da Terra", "Ponta Grossa",
+  "Ponta Verde", "Pontal da Barra", "Prado", "Riacho Doce",
+  "Rio Novo", "Santa Amélia", "Santa Lúcia", "Santo Amaro",
+  "Santos Dumont", "São Jorge", "Serraria", "Tabuleiro do Martins",
+  "Trapiche da Barra", "Vergel do Lago"
+];
+
 /* --- fluxo --- */
 const PASSOS = [
   { id:"local", tipo:"unica", art:"loja", banda:"neve",
@@ -575,17 +609,12 @@ const PASSOS = [
     ]},
 
   // só para quem vai receber equipe em casa: define se a montagem chega até lá
-  { id:"regiao", tipo:"unica", art:"pino", banda:"dourado",
+  { id:"regiao", tipo:"selecao", art:"pino", banda:"dourado",
     se: precisaMontagem,
-    q:"Você está por onde?",
+    q:"Em qual bairro você está?",
     dica:"A montagem no local sai das nossas duas lojas: Centro e Jatiúca.",
-    ops:[
-      {v:"Centro e arredores", sub:"Perto da Av. Moreira Lima"},
-      {v:"Jatiúca, Ponta Verde ou Pajuçara", sub:"Orla"},
-      {v:"Outro bairro de Maceió"},
-      {v:"Região metropolitana", sub:"Rio Largo, Marechal, Barra"},
-      {v:"Outra cidade"}
-    ]},
+    ph:"Escolha o seu bairro",
+    ops:[...BAIRROS, "Região metropolitana (Rio Largo, Marechal, Barra)"]},
 
   // quem marca horário de verdade no fim já responde isso escolhendo a data
   { id:"quando", tipo:"unica", art:"calendario", banda:"dourado",
@@ -801,6 +830,32 @@ function render(){
     });
     btn.textContent = "Continuar";
     val();
+  }
+
+  if(p.tipo === "selecao"){
+    const box = el("div","campo-escolha");
+    const sel = el("select","escolha");
+    sel.required = true;
+    const vazio = el("option","",p.ph || "Escolha uma opção");
+    vazio.value = ""; vazio.disabled = true; vazio.selected = !R[p.id];
+    sel.append(vazio);
+    p.ops.forEach(o=>{
+      const op = el("option","",o);
+      op.value = o;
+      if(R[p.id] === o) op.selected = true;
+      sel.append(op);
+    });
+    sel.onchange = ()=>{
+      R[p.id] = sel.value;
+      btn.disabled = false;
+      if(navigator.vibrate) navigator.vibrate(8);
+      setTimeout(adiante, 300);
+    };
+    box.append(sel);
+    box.insertAdjacentHTML("beforeend", `<svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`);
+    f.append(box);
+    btn.textContent = "Continuar";
+    btn.disabled = !R[p.id];
   }
 
   if(p.tipo === "campos"){

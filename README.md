@@ -9,6 +9,10 @@ enfeites, estilo, e os dados de contato. Duas aparecem só quando fazem sentido:
 entra para quem vai receber equipe em casa, e **prazo** só para quem não vai marcar um
 horário de verdade no fim (ver a seção da agenda abaixo).
 
+A lista de bairros (`BAIRROS`, no topo do script) tem os 50 bairros oficiais de Maceió em
+ordem alfabética, mais "Região metropolitana" no fim. Atendimento fora disso não é
+oferecido.
+
 Feito para rodar no celular, para colar na bio do Instagram e nos stories.
 
 - Uma pergunta por tela, com ilustração e cor próprias
@@ -76,7 +80,7 @@ As perguntas ficam no array `PASSOS`, dentro de `index.html`. Cada item é uma t
   ops:[ {v:"1,80 m", sub:"A queridinha das salas"} ] }
 ```
 
-- `tipo`: `unica` (escolhe uma e avança), `chips` (várias, com `max` opcional) ou `campos` (digitar)
+- `tipo`: `unica` (escolhe uma e avança), `chips` (várias, com `max` opcional), `selecao` (lista suspensa, usada nos bairros) ou `campos` (digitar)
 - `art`: qual ilustração aparece — as disponíveis estão no objeto `ART`
 - `banda`: cor de fundo da ilustração — `creme`, `pinho`, `dourado`, `cereja`, `neve` ou `indigo`
 - `id`: chave da resposta; para ela aparecer no resumo e no WhatsApp, inclua no array `RESUMO`
