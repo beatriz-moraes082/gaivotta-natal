@@ -19,14 +19,9 @@ Feito para rodar no celular, para colar na bio do Instagram e nos stories.
 
 ## Antes de divulgar
 
-**1. Trocar o número do WhatsApp.** Abra `index.html`, procure a linha:
-
-```js
-const WHATSAPP = "5599999999999";
-```
-
-Troque pelo número que recebe os briefings, só dígitos, no formato `55` + DDD + número.
-Exemplo para um número de Maceió: `5582988887777`.
+**1. Número do WhatsApp.** Já configurado: `5582993964110`, o número oficial da montagem
+de árvores. Para trocar, é a constante `WHATSAPP` no topo do `<script>` em `index.html`,
+só dígitos, no formato `55` + DDD + número.
 
 **2. Conferir as duas promessas do quiz.** A pergunta "Do que você precisa da gente?"
 oferece **montagem no local** e a pergunta da árvore oferece **aluguel para a temporada**.
