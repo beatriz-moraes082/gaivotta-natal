@@ -365,14 +365,11 @@ const CAL = {
 /* qual tipo de evento abrir, conforme o serviço e o tamanho escolhidos */
 /* ocupa equipe? só materiais e kit pronto a cliente monta sozinha */
 function precisaMontagem(r){
-  const s = (r || R).servico || "";
-  return s.startsWith("Montagem") || s === "Projeto completo";
+  return ((r || R).servico || "").startsWith("Montagem");
 }
 
 function tipoAgenda(){
   if(!CAL.usuario || !precisaMontagem()) return null;
-  const s = R.servico || "";
-  if(s === "Projeto completo") return CAL.tipos.visita;          // começa por visita, não por montagem
   const t = R.tamanho || "";
   if(t === "Não sei ainda") return CAL.tipos.visita;             // sem medida não dá pra reservar janela
   if(t === "3 m ou mais") return CAL.tipos.grande;
@@ -539,16 +536,13 @@ const PASSOS = [
     ops:[
       {v:"Só os materiais", sub:"A montagem é comigo mesmo"},
       {v:"Kit pronto", sub:"Tudo separado e combinado, eu monto"},
-      {v:"Montagem no local", sub:"Equipe vai até você"},
-      {v:"Montagem e desmontagem", sub:"Guardamos tudo em janeiro"},
-      {v:"Projeto completo", sub:"Árvore, ambientes e vitrine"}
+      {v:"Montagem no local", sub:"Equipe vai até você"}
     ]},
 
   { id:"tem", tipo:"unica", art:"arvore", banda:"creme",
     q:"Você já tem a árvore?",
     ops:[
       {v:"Tenho, guardada desde o ano passado"},
-      {v:"Tenho, mas precisa de socorro", sub:"Falhada, tortinha, galhos soltos"},
       {v:"Quero comprar uma nova"}
     ]},
 
