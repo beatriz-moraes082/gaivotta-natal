@@ -110,8 +110,14 @@ O número de perguntas se ajusta sozinho: o festão de luzes e o contador leem o
 
 ## Publicação
 
-A página é servida pelo GitHub Pages a partir da branch `main`. Qualquer alteração em
+A página é servida pelo GitHub Pages a partir da branch `main`, no domínio
+**https://natal.gaivotta.com.br** (com HTTPS obrigatório). Qualquer alteração em
 `index.html` que for para o `main` entra no ar em um ou dois minutos.
+
+O domínio é `gaivotta.com.br`, registrado no Registro.br e usando o DNS deles, com um
+registro `natal` do tipo CNAME apontando para `beatriz-moraes082.github.io.`. O endereço
+antigo, `beatriz-moraes082.github.io/gaivotta-natal`, continua respondendo e redireciona
+para o domínio novo.
 
 ## Créditos visuais
 
