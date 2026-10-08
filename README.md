@@ -75,7 +75,10 @@ Antes de escolher o horário, a cliente vê uma faixa de preço calculada a part
 respondeu, e o botão de agendar vira um aceite ("Está bom, escolher o horário"). Quem quer
 discutir o valor tem o atalho do WhatsApp logo abaixo.
 
-Os preços ficam na constante `PRECOS`, no topo do `<script>`. Enquanto `ativo: false`,
+> **Atenção:** os valores que estão lá hoje são de **teste**, inventados para validar a
+> tela. Não são os preços da Gaivotta. Trocar pelos reais antes de divulgar o link.
+
+Os preços ficam na constante `PRECOS`, no topo do `<script>`. Com `ativo: false`,
 **nenhum valor aparece** e o quiz funciona como antes. Cada item é uma faixa
 `[mínimo, máximo]` em reais, por tamanho de árvore:
 
@@ -89,6 +92,20 @@ visita técnica, onde o valor é fechado no lugar.
 
 Mudou de preço no meio da temporada? É só editar os números e publicar; não tem nada de
 preço espalhado pelo resto do arquivo.
+
+## Medição
+
+O Pixel da Meta da Gaivotta (`1397722398520828`) está na página, só para medição. Além do
+`PageView`, o quiz dispara:
+
+- `QuizPasso` (evento personalizado) a cada pergunta, com `passo`, `de` e `pergunta` — é
+  o que mostra em qual tela as pessoas desistem
+- `Lead` quando o briefing fica pronto, com serviço, tamanho e região
+- `Schedule` no clique para escolher o horário, com o tipo de evento do Cal
+- `Contact` no clique do WhatsApp
+
+A função `medir()` é silenciosa: se o pixel não carregar (bloqueador, modo anônimo), o
+quiz continua funcionando normalmente.
 
 ## Editando as perguntas
 

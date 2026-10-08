@@ -19,6 +19,17 @@
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232E1C6F'/><path d='M50 16 L70 46 H60 L82 78 H18 L40 46 H30 Z' fill='%232E8055'/><circle cx='50' cy='14' r='7' fill='%23D9A93B'/></svg>">
 
+<!-- Pixel da Meta da Gaivotta — só medição -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1397722398520828');
+fbq('track','PageView');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
@@ -409,6 +420,14 @@ const CAL = {
 };
 
 /* qual tipo de evento abrir, conforme o serviço e o tamanho escolhidos */
+/* medição: silenciosa se o pixel não carregar (bloqueador, modo anônimo) */
+function medir(evento, dados, padrao){
+  try{
+    if(typeof fbq !== "function") return;
+    fbq(padrao ? "track" : "trackCustom", evento, dados || {});
+  }catch(e){ /* medir nunca pode quebrar o quiz */ }
+}
+
 /* ocupa equipe? só materiais e kit pronto a cliente monta sozinha */
 function precisaMontagem(r){
   return ((r || R).servico || "").startsWith("Montagem");
@@ -574,32 +593,35 @@ const BANDAS = {
    a visita técnica, onde o valor é fechado no lugar.
    =================================================================== */
 const PRECOS = {
-  ativo: false,
+  // ATENÇÃO: valores de TESTE, inventados para validar a tela. Não são os preços
+  // da Gaivotta. Trocar pelos reais antes de divulgar o link.
+  ativo: true,
   arvore: {            // árvore nova, para quem vai comprar
-    "Até 1,50 m":      [null, null],
-    "1,80 m":          [null, null],
-    "2,10 m a 2,40 m": [null, null],
-    "3 m ou mais":     [null, null]
+    "Até 1,50 m":      [180, 320],
+    "1,80 m":          [300, 520],
+    "2,10 m a 2,40 m": [450, 780],
+    "3 m ou mais":     [850, 1600]
   },
   doZero: {            // enfeites completos, para quem não tem nada
-    "Até 1,50 m":      [null, null],
-    "1,80 m":          [null, null],
-    "2,10 m a 2,40 m": [null, null],
-    "3 m ou mais":     [null, null]
+    "Até 1,50 m":      [250, 450],
+    "1,80 m":          [400, 750],
+    "2,10 m a 2,40 m": [600, 1100],
+    "3 m ou mais":     [1100, 2200]
   },
   complemento: {       // renovar quem já tem uma base
-    "Até 1,50 m":      [null, null],
-    "1,80 m":          [null, null],
-    "2,10 m a 2,40 m": [null, null],
-    "3 m ou mais":     [null, null]
+    "Até 1,50 m":      [110, 200],
+    "1,80 m":          [170, 320],
+    "2,10 m a 2,40 m": [250, 480],
+    "3 m ou mais":     [450, 900]
   },
   montagem: {          // mão de obra da equipe no local
-    "Até 1,50 m":      [null, null],
-    "1,80 m":          [null, null],
-    "2,10 m a 2,40 m": [null, null],
-    "3 m ou mais":     [null, null]
+    "Até 1,50 m":      [180, 180],
+    "1,80 m":          [250, 250],
+    "2,10 m a 2,40 m": [350, 350],
+    "3 m ou mais":     [600, 600]
   }
 };
+
 
 const reais = n => n.toLocaleString("pt-BR", {style:"currency", currency:"BRL", maximumFractionDigits:0});
 
@@ -836,6 +858,7 @@ function render(){
   rodape.hidden = false;
   btnPular.hidden = !p.pular;
   progresso();
+  medir("QuizPasso", {passo: i + 1, de: VIS.length, pergunta: p.id});
   palco.scrollTop = 0;
   palco.className = "entra";
   palco.innerHTML = "";
@@ -1015,6 +1038,7 @@ function resultado(){
   rodape.hidden = false;
   festao.hidden = conta.hidden = btnVoltar.hidden = true;
   const nome = R.nome ? R.nome.trim().split(" ")[0] : "";
+  medir("Lead", {servico: R.servico, tamanho: R.tamanho, regiao: R.regiao}, true);
 
   const banda = fazBanda("indigo","festa");
 
@@ -1072,7 +1096,10 @@ function resultado(){
   lojas.append(el("span","","Av. Moreira Lima — Centro"), el("span","","Av. Julio Marques Luz, 1149 — Jatiúca"));
   f.append(lojas);
 
-  const zap = ()=> window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`,"_blank","noopener");
+  const zap = ()=>{
+    medir("Contact", {}, true);
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`,"_blank","noopener");
+  };
 
   if(agenda){
     const outro = el("button","outro");
@@ -1088,7 +1115,9 @@ function resultado(){
     ? (visita ? "Escolher horário da visita" : (est ? "Está bom, escolher o horário" : "Escolher dia e horário"))
     : (est ? "Está bom, falar no WhatsApp" : "Enviar no WhatsApp");
   btn.disabled = false;
-  btn.onclick = agenda ? ()=> window.open(agenda,"_blank","noopener") : zap;
+  btn.onclick = agenda
+    ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); window.open(agenda,"_blank","noopener"); }
+    : zap;
 
   btnPular.hidden = false;
   btnPular.textContent = "Refazer o quiz";
