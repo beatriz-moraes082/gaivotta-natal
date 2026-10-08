@@ -420,6 +420,14 @@ const CAL = {
 };
 
 /* qual tipo de evento abrir, conforme o serviço e o tamanho escolhidos */
+/* abre o link sem depender de pop-up: no celular o Safari bloqueia aba nova
+   e o toque não fazia nada, então aí a gente navega na própria aba */
+function abrir(url){
+  let aba = null;
+  try{ aba = window.open(url, "_blank"); }catch(e){ /* bloqueado */ }
+  if(!aba || aba.closed || typeof aba.closed === "undefined") window.location.href = url;
+}
+
 /* medição: silenciosa se o pixel não carregar (bloqueador, modo anônimo) */
 function medir(evento, dados, padrao){
   try{
@@ -1089,7 +1097,7 @@ function resultado(){
 
   const zap = ()=>{
     medir("Contact", {}, true);
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`,"_blank","noopener");
+    abrir(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem())}`);
   };
 
   if(agenda){
@@ -1107,7 +1115,7 @@ function resultado(){
     : (est ? "Está bom, falar no WhatsApp" : "Enviar no WhatsApp");
   btn.disabled = false;
   btn.onclick = agenda
-    ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); window.open(agenda,"_blank","noopener"); }
+    ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); abrir(agenda); }
     : zap;
 
   btnPular.hidden = false;
