@@ -436,7 +436,6 @@ function precisaMontagem(r){
 function tipoAgenda(){
   if(!CAL.usuario || !precisaMontagem()) return null;
   const t = R.tamanho || "";
-  if(t === "Não sei ainda") return CAL.tipos.visita;             // sem medida não dá pra reservar janela
   if(t === "3 m ou mais") return CAL.tipos.grande;
   if(t === "2,10 m a 2,40 m") return CAL.tipos.media;
   return CAL.tipos.pequena;
@@ -683,7 +682,6 @@ const PASSOS = [
     q:"Do que você precisa da gente?",
     ops:[
       {v:"Só os materiais", sub:"A montagem é comigo mesmo"},
-      {v:"Kit pronto", sub:"Tudo separado e combinado, eu monto"},
       {v:"Montagem no local", sub:"Equipe vai até você"}
     ]},
 
@@ -701,8 +699,7 @@ const PASSOS = [
       {v:"Até 1,50 m", sub:"Mesa, aparador, cantinho"},
       {v:"1,80 m", sub:"A queridinha das salas"},
       {v:"2,10 m a 2,40 m", sub:"Presença de sobra"},
-      {v:"3 m ou mais", sub:"Pé-direito alto, loja, hall"},
-      {v:"Não sei ainda", sub:"Me ajuda a escolher"}
+      {v:"3 m ou mais", sub:"Pé-direito alto, loja, hall"}
     ]},
 
   { id:"enfeites", tipo:"unica", art:"caixa", banda:"neve",
@@ -718,8 +715,7 @@ const PASSOS = [
     ops:[
       {v:"Clássico vermelho e dourado"},{v:"Neve: branco e prata"},
       {v:"Rústico de fazenda"},{v:"Colorido e divertido"},
-      {v:"Sofisticado monocromático"},{v:"Nas cores da minha marca"},
-      {v:"Me surpreende"}
+      {v:"Sofisticado monocromático"},{v:"Nas cores da minha marca"}
     ]},
 
   // só para quem vai receber equipe em casa: define se a montagem chega até lá
@@ -1043,14 +1039,11 @@ function resultado(){
   const banda = fazBanda("indigo","festa");
 
   const agenda = linkAgenda();
-  const visita = agenda && agenda.includes(CAL.tipos.visita);
 
   const f = el("div","folha");
   f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
   f.append(el("p","dica", agenda
-    ? (visita
-        ? "Esse é o briefing da sua árvore. Agora escolha um horário pra nossa visita — a gente mede o espaço e fecha a proposta na hora."
-        : "Esse é o briefing da sua árvore. Agora é só escolher o dia e a hora da montagem na nossa agenda.")
+    ? "Esse é o briefing da sua árvore. Agora é só escolher o dia e a hora da montagem na nossa agenda."
     : "Esse é o briefing da sua árvore. Manda pra gente no WhatsApp que voltamos com a proposta e os prazos."));
 
   const fichas = el("div","fichas");
@@ -1112,7 +1105,7 @@ function resultado(){
   palco.append(banda, f);
 
   btn.textContent = agenda
-    ? (visita ? "Escolher horário da visita" : (est ? "Está bom, escolher o horário" : "Escolher dia e horário"))
+    ? (est ? "Está bom, escolher o horário" : "Escolher dia e horário")
     : (est ? "Está bom, falar no WhatsApp" : "Enviar no WhatsApp");
   btn.disabled = false;
   btn.onclick = agenda

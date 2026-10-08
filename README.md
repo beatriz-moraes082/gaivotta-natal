@@ -47,7 +47,7 @@ já existem e nunca oferecer um horário ocupado.
 
 | Apelido (o texto que vai na URL) | Duração | Quando é usado |
 | --- | --- | --- |
-| `visita-tecnica` | 30 min | Quem ainda não sabe o tamanho da árvore |
+| `visita-tecnica` | 30 min | **Sem uso hoje** — era para quem não sabia o tamanho, opção removida do quiz |
 | `montagem-ate-180` | 1h30 | Árvores de até 1,80 m |
 | `montagem-210-240` | 2h30 | Árvores de 2,10 m a 2,40 m |
 | `montagem-3m` | 4h | Árvores de 3 m ou mais, lojas e pé-direito alto |
@@ -66,7 +66,7 @@ A disponibilidade está **segunda a sábado, 9h às 17h**. Para mudar, é em
 Disponibilidade → Working hours, no Cal.
 
 Quem escolhe **Montagem no local** vê "Escolher dia e horário" no fim do quiz, com o
-WhatsApp como segunda opção. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
+WhatsApp como segunda opção. Quem escolhe **só os materiais** termina no WhatsApp. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
 WhatsApp, porque não ocupa equipe.
 
 ## Estimativa de valor
