@@ -69,26 +69,25 @@ Quem escolhe **Montagem no local** vê "Escolher dia e horário" no fim do quiz,
 WhatsApp como segunda opção. Quem escolhe **só os materiais** termina no WhatsApp. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
 WhatsApp, porque não ocupa equipe.
 
-## Estimativa de valor
+## Valor na tela
 
-Antes de escolher o horário, a cliente vê uma faixa de preço calculada a partir do que ela
-respondeu, e o botão de agendar vira um aceite ("Está bom, escolher o horário"). Quem quer
-discutir o valor tem o atalho do WhatsApp logo abaixo.
+Antes de escolher o horário, a cliente vê o **valor da montagem** — o único número fechado,
+definido pelo tamanho da árvore — e o botão de agendar vira um aceite ("Está bom, escolher
+o horário"). Quem quer conversar sobre o valor tem o atalho do WhatsApp logo abaixo.
 
-> **Atenção:** os valores que estão lá hoje são de **teste**, inventados para validar a
-> tela. Não são os preços da Gaivotta. Trocar pelos reais antes de divulgar o link.
+| Tamanho | Montagem |
+| --- | --- |
+| Até 1,50 m | R$ 200 |
+| 1,80 m | R$ 200 |
+| 2,10 m a 2,40 m | R$ 300 a R$ 400 |
+| 3 m ou mais | R$ 600 |
 
-Os preços ficam na constante `PRECOS`, no topo do `<script>`. Com `ativo: false`,
-**nenhum valor aparece** e o quiz funciona como antes. Cada item é uma faixa
-`[mínimo, máximo]` em reais, por tamanho de árvore:
+Os preços ficam na constante `PRECOS`, no topo do `<script>`. Com `ativo: false`, nenhum
+valor aparece.
 
-- `arvore` — árvore nova, só entra na conta para quem responde "Quero comprar uma nova"
-- `doZero` — enfeites completos, para quem responde "Começar do zero"
-- `complemento` — renovação, para quem responde "Tenho uma base"
-- `montagem` — mão de obra; repita o mesmo número nos dois campos se for valor fixo
-
-Mudou de preço no meio da temporada? É só editar os números e publicar; não tem nada de
-preço espalhado pelo resto do arquivo.
+**Árvore e enfeites não são estimados.** No lugar do preço entra a explicação de que a
+Aline separa os materiais junto com a cliente e, no dia da montagem, conta só o que for
+usado. Quem escolhe "só os materiais" vê esse texto sozinho, sem valor.
 
 ## Medição
 
