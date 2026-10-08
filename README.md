@@ -87,9 +87,6 @@ Os preços ficam na constante `PRECOS`, no topo do `<script>`. Com `ativo: false
 - `complemento` — renovação, para quem responde "Tenho uma base"
 - `montagem` — mão de obra; repita o mesmo número nos dois campos se for valor fixo
 
-Quem responde **"Não sei ainda"** no tamanho não recebe estimativa: esse caminho vai para a
-visita técnica, onde o valor é fechado no lugar.
-
 Mudou de preço no meio da temporada? É só editar os números e publicar; não tem nada de
 preço espalhado pelo resto do arquivo.
 

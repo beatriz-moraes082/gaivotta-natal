@@ -588,8 +588,6 @@ const BANDAS = {
    Enquanto `ativo` for false, o quiz não mostra preço nenhum.
    Cada item é uma faixa [mínimo, máximo] em reais. A montagem é um valor
    único (repita o mesmo número nos dois campos se não tiver faixa).
-   Quem responde "Não sei ainda" no tamanho não recebe estimativa: vai para
-   a visita técnica, onde o valor é fechado no lugar.
    =================================================================== */
 const PRECOS = {
   // ATENÇÃO: valores de TESTE, inventados para validar a tela. Não são os preços
@@ -627,7 +625,7 @@ const reais = n => n.toLocaleString("pt-BR", {style:"currency", currency:"BRL", 
 /* monta as linhas da estimativa a partir das respostas */
 function estimativa(){
   const t = R.tamanho;
-  if(!PRECOS.ativo || !t || t === "Não sei ainda") return null;
+  if(!PRECOS.ativo || !t) return null;
 
   const faixa = (tabela, rotulo) => {
     const f = PRECOS[tabela][t];
