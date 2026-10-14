@@ -65,8 +65,17 @@ montagens pequenas, 2 médias e 1 grande — ajustar conforme a equipe aguentar.
 A disponibilidade está **segunda a sábado, 9h às 17h**. Para mudar, é em
 Disponibilidade → Working hours, no Cal.
 
-Quem escolhe **Montagem no local** vê "Escolher dia e horário" no fim do quiz, com o
-WhatsApp como segunda opção. Quem escolhe **só os materiais** termina no WhatsApp. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
+**Todo caminho termina na agenda**, com o WhatsApp como segunda opção em todos eles:
+
+| Serviço | Evento reservado | Vê preço? |
+| --- | --- | --- |
+| Montagem no local | `montagem-*`, pelo tamanho | Sim, o valor da mão de obra |
+| Só os materiais | `visita-tecnica`, 30 min na loja | Não, vê "Como funciona" |
+
+O atendimento de materiais reaproveita o tipo de evento `visita-tecnica`. **Vale renomear
+esse evento no Cal** para algo como "Atendimento para escolher os materiais" e trocar o
+local de "endereço do participante" para o endereço da loja — hoje ele ainda pede o
+endereço da cliente, que não faz sentido para quem vai até a loja. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
 WhatsApp, porque não ocupa equipe.
 
 ## Valor na tela

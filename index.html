@@ -412,7 +412,7 @@ const WHATSAPP = "5582993964110";
 const CAL = {
   usuario: "gaivotta",
   tipos: {
-    visita:   "visita-tecnica",      //  30 min — projeto completo ou tamanho indefinido
+    materiais:"visita-tecnica",      //  30 min — atendimento na loja pra escolher os materiais
     pequena:  "montagem-ate-180",    // 1h30   — até 1,80 m
     media:    "montagem-210-240",    // 2h30   — 2,10 m a 2,40 m
     grande:   "montagem-3m"          //   4h   — 3 m ou mais, loja, pé-direito alto
@@ -442,7 +442,8 @@ function precisaMontagem(r){
 }
 
 function tipoAgenda(){
-  if(!CAL.usuario || !precisaMontagem()) return null;
+  if(!CAL.usuario) return null;
+  if(!precisaMontagem()) return CAL.tipos.materiais;   // atendimento na loja, 30 min
   const t = R.tamanho || "";
   if(t === "3 m ou mais") return CAL.tipos.grande;
   if(t === "2,10 m a 2,40 m") return CAL.tipos.media;
@@ -1009,12 +1010,13 @@ function resultado(){
   const banda = fazBanda("indigo","festa");
 
   const agenda = linkAgenda();
+  const est = estimativa();
 
   const f = el("div","folha");
   f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
-  f.append(el("p","dica", agenda
+  f.append(el("p","dica", est
     ? "Esse é o valor da montagem. Se estiver bom pra você, é só escolher o dia e a hora na nossa agenda."
-    : "Veja como funciona e, se fizer sentido, manda pra gente no WhatsApp que a Aline te atende."));
+    : "A Aline separa a árvore e os enfeites junto com você. Escolha um horário pra passar na loja."));
 
   const fichas = el("div","fichas");
   const JUNTOS = new Set(["dias","horarios"]);   // cabem numa ficha só
@@ -1031,7 +1033,6 @@ function resultado(){
   });
   f.append(fichas);
 
-  const est = estimativa();
   const card = el("div","orcamento");
   card.append(el("h2","", est ? "Sua estimativa" : "Como funciona"));
   if(est){
@@ -1064,7 +1065,7 @@ function resultado(){
   if(agenda){
     const outro = el("button","outro");
     outro.type = "button";
-    outro.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 20.5l1.5-4.9a8.4 8.4 0 0 1-1-4.1 8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 8.4Z"/></svg><span>${est ? "Quer conversar sobre o valor antes? Falar no WhatsApp" : "Prefere combinar por mensagem? Falar no WhatsApp"}</span>`;
+    outro.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 20.5l1.5-4.9a8.4 8.4 0 0 1-1-4.1 8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 8.4Z"/></svg><span>${est ? "Quer conversar sobre o valor antes? Falar no WhatsApp" : "Prefere falar com a gente antes? Chamar no WhatsApp"}</span>`;
     outro.onclick = zap;
     f.insertBefore(outro, lojas);
   }
@@ -1073,7 +1074,7 @@ function resultado(){
 
   btn.textContent = agenda
     ? (est ? "Está bom, escolher o horário" : "Escolher dia e horário")
-    : (est ? "Está bom, falar no WhatsApp" : "Enviar no WhatsApp");
+    : "Enviar no WhatsApp";
   btn.disabled = false;
   btn.onclick = agenda
     ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); abrir(agenda); }
