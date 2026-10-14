@@ -412,7 +412,8 @@ const WHATSAPP = "5582993964110";
 const CAL = {
   usuario: "gaivotta",
   tipos: {
-    materiais:"visita-tecnica",      //  30 min — atendimento na loja pra escolher os materiais
+    // visita-tecnica continua existindo no Cal, hoje sem uso nenhum
+    materiais:"visita-tecnica",
     pequena:  "montagem-ate-180",    // 1h30   — até 1,80 m
     media:    "montagem-210-240",    // 2h30   — 2,10 m a 2,40 m
     grande:   "montagem-3m"          //   4h   — 3 m ou mais, loja, pé-direito alto
@@ -442,8 +443,8 @@ function precisaMontagem(r){
 }
 
 function tipoAgenda(){
-  if(!CAL.usuario) return null;
-  if(!precisaMontagem()) return CAL.tipos.materiais;   // atendimento na loja, 30 min
+  // só a montagem ocupa agenda; materiais a cliente escolhe com a Aline no WhatsApp
+  if(!CAL.usuario || !precisaMontagem()) return null;
   const t = R.tamanho || "";
   if(t === "3 m ou mais") return CAL.tipos.grande;
   if(t === "2,10 m a 2,40 m") return CAL.tipos.media;
@@ -1016,7 +1017,7 @@ function resultado(){
   f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
   f.append(el("p","dica", est
     ? "Esse é o valor da montagem. Se estiver bom pra você, é só escolher o dia e a hora na nossa agenda."
-    : "A Aline vai até você pra escolher a árvore e os enfeites. Escolha o melhor dia e horário."));
+    : "Agora é só mandar pra Aline. Ela escolhe a árvore e os enfeites com você por mensagem e leva até sua casa só o que você escolher."));
 
   const fichas = el("div","fichas");
   const JUNTOS = new Set(["dias","horarios"]);   // cabem numa ficha só
@@ -1044,7 +1045,7 @@ function resultado(){
   }
   card.append(el("p","ressalva", est
     ? "Esse é o valor da mão de obra, fechado pelo tamanho da árvore. Árvore e enfeites a Aline separa junto com você, e no dia da montagem a gente conta só o que for usado."
-    : "A Aline vai até você com as opções de árvore e enfeites. Vocês escolhem juntas e você fica só com o que quiser."));
+    : "Você escolhe a árvore e os enfeites com a Aline pelo WhatsApp, sem compromisso. Ela leva até a sua casa só o que você escolher."));
   f.insertBefore(card, fichas);   // o valor vem antes do briefing, não depois
 
   const av = el("div","aviso");
@@ -1074,7 +1075,7 @@ function resultado(){
 
   btn.textContent = agenda
     ? (est ? "Está bom, escolher o horário" : "Escolher dia e horário")
-    : "Enviar no WhatsApp";
+    : "Falar com a Aline no WhatsApp";
   btn.disabled = false;
   btn.onclick = agenda
     ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); abrir(agenda); }

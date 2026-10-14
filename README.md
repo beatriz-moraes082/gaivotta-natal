@@ -65,52 +65,19 @@ montagens pequenas, 2 médias e 1 grande — ajustar conforme a equipe aguentar.
 A disponibilidade está **segunda a sábado, 9h às 17h**. Para mudar, é em
 Disponibilidade → Working hours, no Cal.
 
-**Todo caminho termina na agenda**, com o WhatsApp como segunda opção em todos eles:
+Os dois caminhos terminam em lugares diferentes, porque a operação é diferente:
 
-| Serviço | Evento reservado | Vê preço? |
+| Serviço | Termina em | Vê preço? |
 | --- | --- | --- |
-| Montagem no local | `montagem-*`, pelo tamanho | Sim, o valor da mão de obra |
-| Só os materiais | `visita-tecnica` | Não, vê "Como funciona" |
+| Montagem no local | Agenda do Cal, no evento do tamanho | Sim, o valor da mão de obra |
+| Só os materiais | WhatsApp da Aline, com o resumo | Não, vê "Como funciona" |
 
-O atendimento de materiais reaproveita o tipo de evento `visita-tecnica`. **Vale renomear
-esse evento no Cal** para "Atendimento para escolher os materiais" — é o título que a
-cliente lê na tela de reserva. O local continua sendo o endereço do participante: todo
-atendimento, de material ou de montagem, acontece na casa da cliente. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
-WhatsApp, porque não ocupa equipe.
+Quem leva só os materiais escolhe as peças com a Aline por mensagem, e ela leva até a casa
+da cliente só o que foi escolhido — por isso não faz sentido marcar horário antes. Quem
+pede montagem vê o valor e, se aceitar, reserva o horário; aí o WhatsApp fica como botão
+secundário, para quem prefere conversar antes.
 
-## Valor na tela
-
-Antes de escolher o horário, a cliente vê o **valor da montagem** — o único número fechado,
-definido pelo tamanho da árvore — e o botão de agendar vira um aceite ("Está bom, escolher
-o horário"). Quem quer conversar sobre o valor tem o atalho do WhatsApp logo abaixo.
-
-| Tamanho | Montagem |
-| --- | --- |
-| Até 1,50 m | R$ 200 |
-| 1,80 m | R$ 200 |
-| 2,10 m a 2,40 m | R$ 300 a R$ 400 |
-| 3 m ou mais | R$ 600 |
-
-Os preços ficam na constante `PRECOS`, no topo do `<script>`. Com `ativo: false`, nenhum
-valor aparece.
-
-**Árvore e enfeites não são estimados.** No lugar do preço entra a explicação de que a
-Aline separa os materiais junto com a cliente e, no dia da montagem, conta só o que for
-usado. Quem escolhe "só os materiais" vê esse texto sozinho, sem valor.
-
-## Medição
-
-O Pixel da Meta da Gaivotta (`1397722398520828`) está na página, só para medição. Além do
-`PageView`, o quiz dispara:
-
-- `QuizPasso` (evento personalizado) a cada pergunta, com `passo`, `de` e `pergunta` — é
-  o que mostra em qual tela as pessoas desistem
-- `Lead` quando o briefing fica pronto, com serviço, tamanho e região
-- `Schedule` no clique para escolher o horário, com o tipo de evento do Cal
-- `Contact` no clique do WhatsApp
-
-A função `medir()` é silenciosa: se o pixel não carregar (bloqueador, modo anônimo), o
-quiz continua funcionando normalmente.
+O tipo de evento `visita-tecnica` continua existindo no Cal, hoje sem uso.
 
 ## Editando as perguntas
 
