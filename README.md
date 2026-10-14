@@ -70,12 +70,12 @@ Disponibilidade → Working hours, no Cal.
 | Serviço | Evento reservado | Vê preço? |
 | --- | --- | --- |
 | Montagem no local | `montagem-*`, pelo tamanho | Sim, o valor da mão de obra |
-| Só os materiais | `visita-tecnica`, 30 min na loja | Não, vê "Como funciona" |
+| Só os materiais | `visita-tecnica` | Não, vê "Como funciona" |
 
 O atendimento de materiais reaproveita o tipo de evento `visita-tecnica`. **Vale renomear
-esse evento no Cal** para algo como "Atendimento para escolher os materiais" e trocar o
-local de "endereço do participante" para o endereço da loja — hoje ele ainda pede o
-endereço da cliente, que não faz sentido para quem vai até a loja. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
+esse evento no Cal** para "Atendimento para escolher os materiais" — é o título que a
+cliente lê na tela de reserva. O local continua sendo o endereço do participante: todo
+atendimento, de material ou de montagem, acontece na casa da cliente. Quem escolhe **só os materiais** ou **kit pronto** continua terminando no
 WhatsApp, porque não ocupa equipe.
 
 ## Valor na tela

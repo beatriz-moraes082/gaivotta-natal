@@ -1016,7 +1016,7 @@ function resultado(){
   f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
   f.append(el("p","dica", est
     ? "Esse é o valor da montagem. Se estiver bom pra você, é só escolher o dia e a hora na nossa agenda."
-    : "A Aline separa a árvore e os enfeites junto com você. Escolha um horário pra passar na loja."));
+    : "A Aline vai até você pra escolher a árvore e os enfeites. Escolha o melhor dia e horário."));
 
   const fichas = el("div","fichas");
   const JUNTOS = new Set(["dias","horarios"]);   // cabem numa ficha só
@@ -1044,7 +1044,7 @@ function resultado(){
   }
   card.append(el("p","ressalva", est
     ? "Esse é o valor da mão de obra, fechado pelo tamanho da árvore. Árvore e enfeites a Aline separa junto com você, e no dia da montagem a gente conta só o que for usado."
-    : "A Aline entra em contato pra separar a árvore e os enfeites junto com você. Você leva só o que escolher."));
+    : "A Aline vai até você com as opções de árvore e enfeites. Vocês escolhem juntas e você fica só com o que quiser."));
   f.insertBefore(card, fichas);   // o valor vem antes do briefing, não depois
 
   const av = el("div","aviso");
