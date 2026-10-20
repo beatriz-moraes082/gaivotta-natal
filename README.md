@@ -52,7 +52,7 @@ já existem e nunca oferecer um horário ocupado.
 | --- | --- | --- |
 | `visita-tecnica` | 30 min | **Sem uso hoje** — era para quem não sabia o tamanho, opção removida do quiz |
 | `montagem-ate-180` | 1h30 | Árvores de até 1,80 m |
-| `montagem-210-240` | 2h30 | Árvores de 2,10 m a 2,40 m |
+| `montagem-210-240` | 2h30 | Árvores de 2,10 m e de 2,40 m |
 | `montagem-3m` | 4h | Árvores de 3 m ou mais, lojas e pé-direito alto |
 
 As durações são um chute inicial, feito pra ser corrigido: depois das primeiras montagens

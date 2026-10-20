@@ -448,7 +448,7 @@ function tipoAgenda(){
   if(!CAL.usuario || !precisaMontagem()) return null;
   const t = R.tamanho || "";
   if(t === "3 m ou mais") return CAL.tipos.grande;
-  if(t === "2,10 m a 2,40 m") return CAL.tipos.media;
+  if(t === "2,10 m" || t === "2,40 m") return CAL.tipos.media;
   return CAL.tipos.pequena;
 }
 
@@ -608,7 +608,8 @@ const PRECOS = {
   montagem: {
     "Até 1,50 m":      [200, 200],
     "1,80 m":          [200, 200],
-    "2,10 m a 2,40 m": [300, 400],   // 2,10 m sai 300 e 2,40 m sai 400
+    "2,10 m":          [300, 300],
+    "2,40 m":          [400, 400],
     "3 m ou mais":     [600, 600]
   }
 };
@@ -666,7 +667,8 @@ const PASSOS = [
     ops:[
       {v:"Até 1,50 m", sub:"Mesa, aparador, cantinho"},
       {v:"1,80 m", sub:"A queridinha das salas"},
-      {v:"2,10 m a 2,40 m", sub:"Presença de sobra"},
+      {v:"2,10 m", sub:"Presença de sobra"},
+      {v:"2,40 m", sub:"Pra salas mais altas"},
       {v:"3 m ou mais", sub:"Pé-direito alto, loja, hall"}
     ]},
 
@@ -681,9 +683,9 @@ const PASSOS = [
     q:"Qual clima você quer criar?",
     dica:"Escolha até 2 — a gente cuida pra que conversem entre si.",
     ops:[
-      {v:"Clássico vermelho e dourado"},{v:"Neve: branco e prata"},
-      {v:"Rústico de fazenda"},{v:"Colorido e divertido"},
-      {v:"Sofisticado monocromático"},{v:"Nas cores da minha marca"}
+      {v:"Clássico: vermelho e dourado"},{v:"Toda vermelha"},
+      {v:"Rústico"},{v:"Toda dourada"},
+      {v:"Colorido candy"},{v:"Neve: branco e prata"}
     ]},
 
   // só para quem vai receber equipe em casa: define se a montagem chega até lá
