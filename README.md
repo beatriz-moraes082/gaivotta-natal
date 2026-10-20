@@ -1,11 +1,16 @@
 # Quiz da Árvore de Natal — Gaivotta
 
-Página mobile de captação de demanda de árvore de Natal. A cliente responde 7 perguntas
-rápidas (uma por tela) e, no final, vê o valor da montagem e escolhe o horário na agenda,
-com o WhatsApp da loja como alternativa — o briefing vai junto, já escrito.
+Página mobile de captação de demanda de árvore de Natal. A cliente responde 8 perguntas
+rápidas (uma por tela) e, no final, vê o valor da montagem e manda o resumo para o
+WhatsApp da loja, já escrito.
 
-As perguntas são: onde vai ficar, se já tem a árvore, tamanho, enfeites, estilo, bairro e
-os dados de contato. **Prazo** só aparece se a agenda do Cal for desligada.
+As perguntas são: onde vai ficar, se já tem a árvore, tamanho, enfeites, estilo, bairro,
+prazo e os dados de contato.
+
+**A agenda do Cal foi desligada em 20/10/2026**: o quiz não marca mais horário, só manda o
+resumo para o WhatsApp e o dia é combinado com a Aline por mensagem. Para religar, é só
+voltar `CAL.usuario` para `"gaivotta"` no script — a seção da agenda abaixo fica como
+referência.
 
 A pergunta "Do que você precisa da gente?" (só materiais ou montagem) **saiu do quiz em
 20/10/2026**: todo mundo segue pelo caminho da montagem. A resposta fica fixa como
