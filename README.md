@@ -1,13 +1,16 @@
 # Quiz da Árvore de Natal — Gaivotta
 
-Página mobile de captação de demanda de árvore de Natal. A cliente responde 8 perguntas
-rápidas (uma por tela) e, no final, a página monta o briefing e abre o WhatsApp da loja
-com tudo já escrito — serviço, tamanho, estilo, prazo e região.
+Página mobile de captação de demanda de árvore de Natal. A cliente responde 7 perguntas
+rápidas (uma por tela) e, no final, vê o valor da montagem e escolhe o horário na agenda,
+com o WhatsApp da loja como alternativa — o briefing vai junto, já escrito.
 
-As perguntas são: onde vai ficar, do que ela precisa da loja, se já tem a árvore, tamanho,
-enfeites, estilo, e os dados de contato. Duas aparecem só quando fazem sentido: **região**
-entra para quem vai receber equipe em casa, e **prazo** só para quem não vai marcar um
-horário de verdade no fim (ver a seção da agenda abaixo).
+As perguntas são: onde vai ficar, se já tem a árvore, tamanho, enfeites, estilo, bairro e
+os dados de contato. **Prazo** só aparece se a agenda do Cal for desligada.
+
+A pergunta "Do que você precisa da gente?" (só materiais ou montagem) **saiu do quiz em
+20/10/2026**: todo mundo segue pelo caminho da montagem. A resposta fica fixa como
+"Montagem no local" (constante `SERVICO` no script), então continua aparecendo no resumo,
+no WhatsApp e no pixel. O caminho "só os materiais" ainda existe no código, sem uso.
 
 A lista de bairros (`BAIRROS`, no topo do script) tem os 50 bairros oficiais de Maceió em
 ordem alfabética, mais "Região metropolitana" no fim. Atendimento fora disso não é

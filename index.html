@@ -653,13 +653,6 @@ const PASSOS = [
       {v:"Condomínio, igreja ou evento", sub:"Área comum, pé-direito alto"}
     ]},
 
-  { id:"servico", tipo:"unica", art:"escada", banda:"indigo",
-    q:"Do que você precisa da gente?",
-    ops:[
-      {v:"Só os materiais", sub:"A montagem é comigo mesmo"},
-      {v:"Montagem no local", sub:"Equipe vai até você"}
-    ]},
-
   { id:"tem", tipo:"unica", art:"arvore", banda:"creme",
     q:"Você já tem a árvore?",
     ops:[
@@ -745,7 +738,9 @@ function atualizaVis(){
 }
 
 /* --- estado --- */
-const R = {};
+// a pergunta do serviço saiu do quiz em 20/10/2026: todo mundo segue pela montagem
+const SERVICO = "Montagem no local";
+const R = {servico: SERVICO};
 let i = 0;
 const app = document.getElementById("app");
 const palco = document.getElementById("palco");
@@ -1086,7 +1081,7 @@ function resultado(){
 
   btnPular.hidden = false;
   btnPular.textContent = "Refazer o quiz";
-  btnPular.onclick = ()=>{ Object.keys(R).forEach(k=>delete R[k]); i=0; abertura(); };
+  btnPular.onclick = ()=>{ Object.keys(R).forEach(k=>delete R[k]); R.servico = SERVICO; i=0; abertura(); };
 
   confete();
 }
