@@ -253,6 +253,7 @@ fbq('track','PageView');
   }
 
   .campo{display:flex;flex-direction:column;gap:7px}
+  .campo[hidden],.grupo[hidden]{display:none}
   .campo label{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-suave);font-weight:700}
   input,textarea{
     font:inherit;font-size:16px;color:var(--tinta);background:var(--cartao);
@@ -746,7 +747,10 @@ const PASSOS = [
     ops:[
       {v:"Clássico: vermelho e dourado"},{v:"Toda vermelha"},
       {v:"Rústico"},{v:"Toda dourada"},
-      {v:"Colorido candy"},{v:"Neve: branco e prata"}
+      {v:"Colorido candy"},{v:"Neve: branco e prata"},
+      // "Outros" abre uma caixinha pra cliente contar o que imagina
+      {v:"Outros", outro:{k:"estiloOutro", label:"Conta pra gente como você imagina",
+        ph:"Ex.: azul e prata, tema praia, com as fotos da família..."}}
     ]},
 
   // só para quem vai receber equipe em casa: define se a montagem chega até lá
@@ -937,14 +941,39 @@ function render(){
           sel.push(o.v);
         }
         box.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", sel.includes(x.textContent)));
-        btn.disabled = sel.length === 0;
+        mostraOutro();
         if(navigator.vibrate) navigator.vibrate(8);
       };
       box.append(b);
     });
     f.append(box);
+
+    // opção "Outros": a caixinha só aparece (e só vale) com ela marcada
+    const opOutro = p.ops.find(o => o.outro);
+    let campo = null, txt = null;
+    if(opOutro){
+      const c = opOutro.outro;
+      campo = el("div","campo");
+      const lab = el("label","",c.label); lab.htmlFor = "c_"+c.k;
+      txt = el("textarea"); txt.id = "c_"+c.k; txt.placeholder = c.ph; txt.value = R[c.k] || "";
+      txt.oninput = ()=>{ R[c.k] = txt.value.trim(); valida(); };
+      campo.append(lab, txt);
+      f.append(campo);
+    }
+    const comOutro = ()=> opOutro && R[p.id].includes(opOutro.v);
+    const valida = ()=>{
+      btn.disabled = R[p.id].length === 0 || (comOutro() && !(R[opOutro.outro.k]||"").trim());
+    };
+    function mostraOutro(){
+      if(campo){
+        campo.hidden = !comOutro();
+        if(comOutro()){ R[opOutro.outro.k] = txt.value.trim(); if(!txt.value) txt.focus(); }
+        else delete R[opOutro.outro.k];
+      }
+      valida();
+    }
     btn.textContent = "Continuar";
-    btn.disabled = R[p.id].length === 0;
+    mostraOutro();
   }
 
   if(p.tipo === "agenda"){
@@ -1159,7 +1188,7 @@ function fechar(){
 /* --- resultado --- */
 const RESUMO = [
   ["Local","local"],["Serviço","servico"],["Árvore","tem"],["Tamanho","tamanho"],
-  ["Enfeites","enfeites"],["Estilo","estilo"],["Região","regiao"],["Dia e horário","quando"]
+  ["Enfeites","enfeites"],["Estilo","estilo"],["Como imagina","estiloOutro"],["Região","regiao"],["Dia e horário","quando"]
 ];
 
 function resultado(){
