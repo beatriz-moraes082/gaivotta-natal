@@ -457,6 +457,8 @@ function linkAgenda(){
   if(!tipo) return null;
   const q = new URLSearchParams();
   if(R.nome) q.set("name", R.nome);
+  // o Cal pede um assunto obrigatório; preenchido aqui pra cliente não ter que escrever
+  q.set("title", R.tamanho ? `Montagem de árvore ${R.tamanho}` : "Montagem de árvore de Natal");
   q.set("notes", mensagem());
   return `https://cal.com/${CAL.usuario}/${tipo}?${q}`;
 }
