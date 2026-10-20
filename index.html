@@ -1212,7 +1212,7 @@ function resultado(){
 
   btn.textContent = agenda
     ? (est ? "Está bom, escolher o horário" : "Escolher dia e horário")
-    : (R.quandoDia ? "Conferir disponibilidade no WhatsApp" : "Falar com a Aline no WhatsApp");
+    : "Conferir disponibilidade no WhatsApp";
   btn.disabled = false;
   btn.onclick = agenda
     ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); abrir(agenda); }
