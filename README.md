@@ -5,7 +5,13 @@ rápidas (uma por tela) e, no final, vê o valor da montagem e manda o resumo pa
 WhatsApp da loja, já escrito.
 
 As perguntas são: onde vai ficar, se já tem a árvore, tamanho, enfeites, estilo, bairro,
-prazo e os dados de contato.
+dia e horário da montagem, e os dados de contato.
+
+**Dia e horário** é um calendário: a cliente escolhe o dia e um horário sugerido, e no fim
+o botão vira "Conferir disponibilidade no WhatsApp". Não é reserva — a Aline confere e
+confirma por mensagem. Os horários ficam na constante `MONTAGEM` no topo do script: hoje
+19h de segunda a sexta, e 15h ou 19h no sábado e no domingo, de amanhã até 24/12. Quem
+ainda não sabe a data toca em "Ainda não tenho uma data" e segue.
 
 **A agenda do Cal foi desligada em 20/10/2026**: o quiz não marca mais horário, só manda o
 resumo para o WhatsApp e o dia é combinado com a Aline por mensagem. Para religar, é só

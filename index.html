@@ -204,6 +204,37 @@ fbq('track','PageView');
     animation:selo .28s cubic-bezier(.3,1.7,.5,1) both;
   }
 
+  /* ---------- calendário ---------- */
+  .cal{background:var(--cartao);border:2px solid var(--borda);border-radius:18px;padding:12px 10px 10px}
+  .cal-topo{display:flex;align-items:center;justify-content:space-between;padding:0 4px 8px}
+  .cal-mes{font-weight:700;font-size:16.5px}
+  .cal-nav{
+    width:38px;height:38px;border-radius:50%;border:none;background:none;color:var(--tinta);
+    display:grid;place-items:center;cursor:pointer;
+  }
+  .cal-nav svg{width:20px;height:20px}
+  .cal-nav:disabled{opacity:.25;cursor:default}
+  .cal-grade{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal-sem{
+    text-align:center;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+    color:var(--tinta-suave);padding:4px 0 6px;
+  }
+  .cal-dia{
+    aspect-ratio:1;min-height:38px;border-radius:12px;border:none;
+    background:color-mix(in srgb, var(--indigo) 7%, var(--cartao));color:var(--tinta);
+    font:inherit;font-size:15.5px;font-weight:600;cursor:pointer;
+    transition:background .15s,transform .12s;
+  }
+  .cal-dia:active{transform:scale(.92)}
+  .cal-dia:disabled{background:none;color:var(--tinta-suave);opacity:.45;font-weight:400;cursor:default}
+  .cal-dia[aria-pressed="true"]{background:var(--indigo);color:var(--indigo-txt)}
+  .cal-vazio{aspect-ratio:1}
+  .sem-data{
+    align-self:flex-start;padding:4px 0;background:none;border:none;
+    color:var(--tinta-suave);font:inherit;font-size:15px;font-weight:500;
+    text-decoration:underline;cursor:pointer;
+  }
+
   .campo-escolha{position:relative;display:flex}
   .escolha{
     appearance:none;-webkit-appearance:none;
@@ -626,6 +657,17 @@ function estimativa(){
   return {min: f[0], max: f[1]};
 }
 
+/* ===================================================================
+   DIAS E HORÁRIOS DA MONTAGEM (só sugestão: a Aline confirma no WhatsApp)
+   Segunda a sexta tem um horário; sábado e domingo têm dois.
+   O calendário vai de amanhã até a data de `ate` (ano-mês-dia).
+   =================================================================== */
+const MONTAGEM = {
+  semana:      ["19h"],
+  fimDeSemana: ["15h", "19h"],
+  ate: "2026-12-24"
+};
+
 /* os 50 bairros oficiais de Maceió, em ordem alfabética */
 const BAIRROS = [
   "Antares", "Barro Duro", "Bebedouro", "Benedito Bentes",
@@ -697,17 +739,10 @@ const PASSOS = [
     ph:"Escolha o seu bairro",
     ops:[...BAIRROS, "Região metropolitana (Rio Largo, Marechal, Barra)"]},
 
-  // quem marca horário de verdade no fim já responde isso escolhendo a data
-  { id:"quando", tipo:"unica", art:"calendario", banda:"dourado",
-    se: r => !precisaMontagem(r) || !CAL.usuario,
-    q:"Quando você quer tudo pronto?",
-    ops:[
-      {v:"O quanto antes"},
-      {v:"Primeira quinzena de novembro"},
-      {v:"Segunda quinzena de novembro", sub:"O período mais concorrido"},
-      {v:"Começo de dezembro"},
-      {v:"Só pesquisando por enquanto"}
-    ]},
+  // a cliente escolhe dia e horário; a Aline confere a disponibilidade no WhatsApp
+  { id:"quando", tipo:"calendario", art:"calendario", banda:"dourado",
+    q:"Qual o melhor dia pra montagem?",
+    dica:"Escolha o dia e o horário que você prefere. A gente confere a disponibilidade com você no WhatsApp."},
 
   { id:"contato", tipo:"campos", art:"conversa", banda:"indigo",
     q:"Pra quem mandamos a proposta?",
@@ -916,6 +951,107 @@ function render(){
     val();
   }
 
+  if(p.tipo === "calendario"){
+    const ISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const inicio = new Date(hoje); inicio.setDate(inicio.getDate()+1);
+    const [ay,am,ad] = MONTAGEM.ate.split("-").map(Number);
+    const fim = new Date(ay, am-1, ad);
+    const horas = d => (d.getDay()===0 || d.getDay()===6) ? MONTAGEM.fimDeSemana : MONTAGEM.semana;
+    const deIso = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+
+    let mes = R.quandoDia ? deIso(R.quandoDia) : new Date(inicio);
+    mes = new Date(mes.getFullYear(), mes.getMonth(), 1);
+
+    const cal = el("div","cal");
+    const topo = el("div","cal-topo");
+    const seta = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+    const ant = el("button","cal-nav"); ant.type = "button"; ant.innerHTML = seta("m15 18-6-6 6-6"); ant.setAttribute("aria-label","Mês anterior");
+    const prox = el("button","cal-nav"); prox.type = "button"; prox.innerHTML = seta("m9 18 6-6-6-6"); prox.setAttribute("aria-label","Próximo mês");
+    const titulo = el("span","cal-mes");
+    topo.append(ant, titulo, prox);
+    const grade = el("div","cal-grade");
+    cal.append(topo, grade);
+
+    const grupo = el("div","grupo");
+    const rot = el("span","rotulo");
+    const chips = el("div","chips");
+    grupo.append(rot, chips);
+
+    const val = ()=>{
+      btn.disabled = !(R.quandoDia && R.quandoHora);
+      if(!btn.disabled){
+        const t = deIso(R.quandoDia).toLocaleDateString("pt-BR",{weekday:"long", day:"numeric", month:"long"});
+        R.quando = `${t.charAt(0).toUpperCase()+t.slice(1)}, às ${R.quandoHora}`;
+      }
+    };
+
+    const horarios = ()=>{
+      chips.innerHTML = "";
+      grupo.hidden = !R.quandoDia;
+      if(!R.quandoDia) return;
+      const d = deIso(R.quandoDia);
+      rot.textContent = "Horário em " + d.toLocaleDateString("pt-BR",{weekday:"long", day:"numeric", month:"long"});
+      const ops = horas(d);
+      if(!ops.includes(R.quandoHora)) R.quandoHora = ops.length === 1 ? ops[0] : null;
+      ops.forEach(h=>{
+        const b = el("button","chip");
+        b.type = "button";
+        b.textContent = h;
+        b.setAttribute("aria-pressed", R.quandoHora === h);
+        b.onclick = ()=>{
+          R.quandoHora = h;
+          chips.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x.textContent === h));
+          val();
+          if(navigator.vibrate) navigator.vibrate(8);
+        };
+        chips.append(b);
+      });
+    };
+
+    const desenha = ()=>{
+      const nomeMes = mes.toLocaleDateString("pt-BR",{month:"long", year:"numeric"});
+      titulo.textContent = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+      ant.disabled = mes <= new Date(inicio.getFullYear(), inicio.getMonth(), 1);
+      prox.disabled = new Date(mes.getFullYear(), mes.getMonth()+1, 1) > fim;
+      grade.innerHTML = "";
+      ["D","S","T","Q","Q","S","S"].forEach(x=>grade.append(el("span","cal-sem",x)));
+      for(let k=0; k<mes.getDay(); k++) grade.append(el("span","cal-vazio"));
+      const total = new Date(mes.getFullYear(), mes.getMonth()+1, 0).getDate();
+      for(let n=1; n<=total; n++){
+        const d = new Date(mes.getFullYear(), mes.getMonth(), n);
+        const b = el("button","cal-dia", String(n));
+        b.type = "button";
+        b.disabled = d < inicio || d > fim;
+        b.setAttribute("aria-pressed", R.quandoDia === ISO(d));
+        b.setAttribute("aria-label", d.toLocaleDateString("pt-BR",{weekday:"long", day:"numeric", month:"long"}));
+        b.onclick = ()=>{
+          R.quandoDia = ISO(d);
+          grade.querySelectorAll(".cal-dia").forEach(x=>x.setAttribute("aria-pressed", x === b));
+          horarios(); val();
+          if(navigator.vibrate) navigator.vibrate(8);
+          grupo.scrollIntoView({behavior:"smooth", block:"nearest"});
+        };
+        grade.append(b);
+      }
+    };
+    ant.onclick = ()=>{ mes = new Date(mes.getFullYear(), mes.getMonth()-1, 1); desenha(); };
+    prox.onclick = ()=>{ mes = new Date(mes.getFullYear(), mes.getMonth()+1, 1); desenha(); };
+
+    const semData = el("button","sem-data","Ainda não tenho uma data");
+    semData.type = "button";
+    semData.onclick = ()=>{
+      delete R.quandoDia; delete R.quandoHora;
+      R.quando = "Ainda sem data definida";
+      btn.disabled = false; adiante();
+    };
+
+    f.append(cal, grupo, semData);
+    desenha(); horarios();
+    btn.textContent = "Continuar";
+    val();
+  }
+
   if(p.tipo === "selecao"){
     const box = el("div","campo-escolha");
     const sel = el("select","escolha");
@@ -997,7 +1133,7 @@ function fechar(){
 /* --- resultado --- */
 const RESUMO = [
   ["Local","local"],["Serviço","servico"],["Árvore","tem"],["Tamanho","tamanho"],
-  ["Enfeites","enfeites"],["Estilo","estilo"],["Região","regiao"],["Prazo","quando"]
+  ["Enfeites","enfeites"],["Estilo","estilo"],["Região","regiao"],["Dia e horário","quando"]
 ];
 
 function resultado(){
@@ -1017,7 +1153,7 @@ function resultado(){
   const f = el("div","folha");
   f.append(el("h1","", nome ? `Prontinho, ${nome}!` : "Prontinho!"));
   f.append(el("p","dica", est
-    ? "Esse é o valor da montagem. Se estiver bom pra você, é só mandar o resumo pra Aline no WhatsApp e combinar o dia."
+    ? "Esse é o valor da montagem. Se estiver bom pra você, é só mandar o resumo pra Aline no WhatsApp: ela confere se o dia que você escolheu está livre."
     : "Agora é só mandar pra Aline. Ela escolhe a árvore e os enfeites com você por mensagem e leva até sua casa só o que você escolher."));
 
   const fichas = el("div","fichas");
@@ -1076,7 +1212,7 @@ function resultado(){
 
   btn.textContent = agenda
     ? (est ? "Está bom, escolher o horário" : "Escolher dia e horário")
-    : "Falar com a Aline no WhatsApp";
+    : (R.quandoDia ? "Conferir disponibilidade no WhatsApp" : "Falar com a Aline no WhatsApp");
   btn.disabled = false;
   btn.onclick = agenda
     ? ()=>{ medir("Schedule", {tipo: tipoAgenda()}, true); abrir(agenda); }
@@ -1098,6 +1234,7 @@ function mensagem(){
     L.push(`${rot}: ${Array.isArray(v) ? v.join(", ") : v}`);
   });
   if(R.obs) L.push(`Recado: ${R.obs}`);
+  if(R.quandoDia) L.push("", "Pode conferir se esse dia e horário estão livres?");
   return L.join("\n");
 }
 
