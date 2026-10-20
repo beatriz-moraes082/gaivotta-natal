@@ -8,3 +8,5 @@
 *.pdf
 .DS_Store
 !capa.png
+!trilha-claro.png
+!trilha-escuro.png

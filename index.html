@@ -309,6 +309,24 @@ fbq('track','PageView');
     font-weight:700;color:var(--sol);margin:0;
   }
 
+  /* ---------- crédito da Trilha ---------- */
+  .trilha{
+    display:inline-flex;align-items:center;gap:8px;align-self:center;
+    font-size:12px;color:var(--tinta-suave);text-decoration:none;
+  }
+  .trilha img{height:17px;width:auto;opacity:.85}
+  .trilha .claro{display:none}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .trilha .claro{display:block}
+    :root:not([data-theme="light"]) .trilha .escuro{display:none}
+  }
+  :root[data-theme="dark"] .trilha .claro{display:block}
+  :root[data-theme="dark"] .trilha .escuro{display:none}
+  .capa{position:relative}
+  .capa .trilha{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);white-space:nowrap;color:#FFF6E9;opacity:.75}
+  .capa .trilha .claro{display:block}
+  .capa .trilha .escuro{display:none}
+
   /* ---------- espera ---------- */
   .carregando{
     position:absolute;inset:0;z-index:9;background:#2E1C6F;color:#FFF6E9;
@@ -790,6 +808,13 @@ const festao = document.getElementById("festao");
 const conta = document.getElementById("conta");
 
 const el = (t,c,txt)=>{const n=document.createElement(t); if(c)n.className=c; if(txt!=null)n.textContent=txt; return n;};
+/* "Desenvolvido por Trilha", com o logo claro ou escuro conforme o fundo */
+function creditoTrilha(){
+  const a = el("a","trilha");
+  a.href = "https://trilhaperformance.com.br"; a.target = "_blank"; a.rel = "noopener";
+  a.innerHTML = `<span>Desenvolvido por</span><img class="escuro" src="trilha-escuro.png" alt="Trilha Performance Digital"><img class="claro" src="trilha-claro.png" alt="Trilha Performance Digital">`;
+  return a;
+}
 const check = `<span class="marca"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>`;
 
 function fazBanda(nome, art){
@@ -850,6 +875,7 @@ function abertura(){
   atualizaVis();
   c.append(el("p","",`${VIS.length} perguntinhas rápidas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo.`));
   c.append(el("p","selo","Leva 1 minuto"));
+  c.append(creditoTrilha());
   palco.append(c);
 }
 
@@ -1194,6 +1220,7 @@ function resultado(){
   lojas.innerHTML = "<b>Nossas lojas</b>";
   lojas.append(el("span","","Av. Moreira Lima — Centro"), el("span","","Av. Julio Marques Luz, 1149 — Jatiúca"));
   f.append(lojas);
+  f.append(creditoTrilha());
 
   const zap = ()=>{
     medir("Contact", {}, true);
