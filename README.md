@@ -79,6 +79,23 @@ secundário, para quem prefere conversar antes.
 
 O tipo de evento `visita-tecnica` continua existindo no Cal, hoje sem uso.
 
+## O que o quiz preenche no Cal
+
+O link de agendamento leva três parâmetros, pra cliente digitar o mínimo possível:
+
+| Parâmetro | De onde vem |
+| --- | --- |
+| `name` | a resposta da pergunta de contato |
+| `title` | o assunto obrigatório do Cal, montado com o tamanho da árvore |
+| `notes` | o briefing inteiro |
+
+Ela ainda digita **e-mail** e **endereço da montagem** — os dois fazem sentido: o Cal precisa
+do e-mail para confirmar, e o endereço só ela sabe.
+
+O `title` existe porque o Cal tem um campo obrigatório "De que se trata esta reunião?".
+Dá para escondê-lo em cada tipo de evento (Avançado → Perguntas da reserva); enquanto não
+for escondido, o preenchimento pelo link resolve.
+
 ## Editando as perguntas
 
 As perguntas ficam no array `PASSOS`, dentro de `index.html`. Cada item é uma tela:
