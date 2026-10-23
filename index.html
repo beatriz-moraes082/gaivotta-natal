@@ -227,6 +227,7 @@ fbq('track','PageView');
   }
   .cal-dia:active{transform:scale(.92)}
   .cal-dia:disabled{background:none;color:var(--tinta-suave);opacity:.45;font-weight:400;cursor:default}
+  .cal-dia.lotado{text-decoration:line-through}
   .cal-dia[aria-pressed="true"]{background:var(--indigo);color:var(--indigo-txt)}
   .cal-vazio{aspect-ratio:1}
   .sem-data{
@@ -687,6 +688,33 @@ const MONTAGEM = {
   ate: "2026-12-24"
 };
 
+/* ===================================================================
+   AGENDA DA ALINE (Google Agenda "Gaivotta Jatiuca")
+   Endereço do Apps Script que devolve os dias e horários já ocupados
+   (só datas e horários, sem nome nem endereço de cliente).
+   Evento de dia inteiro ("MONTAGEM ...", "NÃO POSSO") fecha o dia todo;
+   evento com horário fecha o horário que ele encosta.
+   Vazio = o calendário mostra todos os horários, como antes.
+   O script está em apps-script/agenda.gs.
+   =================================================================== */
+const AGENDA = { url: "" };
+
+let ocupadosPromessa = null;
+function ocupados(){
+  if(!AGENDA.url) return Promise.resolve({});
+  if(!ocupadosPromessa){
+    const ctl = new AbortController();
+    const t = setTimeout(()=>ctl.abort(), 6000);
+    ocupadosPromessa = fetch(AGENDA.url, {signal: ctl.signal})
+      .then(r=>r.json())
+      .then(j=>j && j.ocupado ? j.ocupado : {})
+      .catch(()=>({}))
+      .finally(()=>clearTimeout(t));
+  }
+  return ocupadosPromessa;
+}
+ocupados(); /* já busca na abertura, pra estar pronto quando a pessoa chegar no calendário */
+
 /* os 50 bairros oficiais de Maceió, em ordem alfabética */
 const BAIRROS = [
   "Antares", "Barro Duro", "Bebedouro", "Benedito Bentes",
@@ -1014,6 +1042,12 @@ function render(){
     const fim = new Date(ay, am-1, ad);
     const horas = d => (d.getDay()===0 || d.getDay()===6) ? MONTAGEM.fimDeSemana : MONTAGEM.semana;
     const deIso = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+    let OC = {};
+    const livres = d => {
+      const o = OC[ISO(d)];
+      if(o === "dia") return [];
+      return horas(d).filter(h => !(o || []).includes(h));
+    };
 
     let mes = R.quandoDia ? deIso(R.quandoDia) : new Date(inicio);
     mes = new Date(mes.getFullYear(), mes.getMonth(), 1);
@@ -1047,7 +1081,7 @@ function render(){
       if(!R.quandoDia) return;
       const d = deIso(R.quandoDia);
       rot.textContent = "Horário em " + d.toLocaleDateString("pt-BR",{weekday:"long", day:"numeric", month:"long"});
-      const ops = horas(d);
+      const ops = livres(d);
       if(!ops.includes(R.quandoHora)) R.quandoHora = ops.length === 1 ? ops[0] : null;
       ops.forEach(h=>{
         const b = el("button","chip");
@@ -1077,7 +1111,9 @@ function render(){
         const d = new Date(mes.getFullYear(), mes.getMonth(), n);
         const b = el("button","cal-dia", String(n));
         b.type = "button";
-        b.disabled = d < inicio || d > fim;
+        const foraDoPrazo = d < inicio || d > fim;
+        b.disabled = foraDoPrazo || !livres(d).length;
+        if(!foraDoPrazo && !livres(d).length) b.classList.add("lotado");
         b.setAttribute("aria-pressed", R.quandoDia === ISO(d));
         b.setAttribute("aria-label", d.toLocaleDateString("pt-BR",{weekday:"long", day:"numeric", month:"long"}));
         b.onclick = ()=>{
@@ -1105,6 +1141,12 @@ function render(){
     desenha(); horarios();
     btn.textContent = "Continuar";
     val();
+
+    ocupados().then(m=>{
+      OC = m || {};
+      if(R.quandoDia && !livres(deIso(R.quandoDia)).length){ delete R.quandoDia; delete R.quandoHora; }
+      desenha(); horarios(); val();
+    });
   }
 
   if(p.tipo === "selecao"){
