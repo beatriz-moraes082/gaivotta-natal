@@ -153,12 +153,14 @@
 }
 </script>
 
-<!-- Pixel da Meta da Gaivotta — só medição -->
+<!-- Pixel da Meta da Gaivotta — só medição. O script da Meta só baixa depois que a
+     página carrega; os eventos disparados antes ficam na fila e são enviados igual. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];f.addEventListener('load',function(){
+setTimeout(function(){t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)},0)})}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','1397722398520828');
 fbq('track','PageView');
@@ -1078,7 +1080,7 @@ const el = (t,c,txt)=>{const n=document.createElement(t); if(c)n.className=c; if
 function creditoTrilha(){
   const a = el("a","trilha");
   a.href = "https://trilhaperformance.com.br"; a.target = "_blank"; a.rel = "noopener";
-  a.innerHTML = `<span>Desenvolvido por</span><img class="escuro" src="trilha-escuro.png" alt="Trilha Performance Digital"><img class="claro" src="trilha-claro.png" alt="Trilha Performance Digital">`;
+  a.innerHTML = `<span>Desenvolvido por</span><img class="escuro" src="trilha-escuro.webp" width="95" height="17" alt="Trilha Performance Digital"><img class="claro" src="trilha-claro.webp" width="94" height="17" alt="Trilha Performance Digital">`;
   return a;
 }
 const check = `<span class="marca"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></span>`;
