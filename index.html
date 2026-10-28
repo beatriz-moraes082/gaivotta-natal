@@ -8,6 +8,8 @@
 <title>Monte Sua Árvore · Gaivotta</title>
 <meta name="description" content="Responda algumas perguntas rápidas e a Gaivotta volta no WhatsApp com tamanho, paleta, lista de materiais e prazo da sua árvore de Natal.">
 
+<link rel="canonical" href="https://natal.gaivotta.com.br/">
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gaivotta">
 <meta property="og:title" content="Sua árvore de Natal, montada do seu jeito">
@@ -438,7 +440,14 @@ fbq('track','PageView');
     <div class="conta" id="conta" hidden></div>
   </header>
 
-  <main id="palco"></main>
+  <!-- O mesmo conteúdo da abertura já vem no HTML, para buscadores e leitores
+       que não rodam JavaScript. A função abertura() troca isso pela versão completa. -->
+  <main id="palco"><div class="capa">
+    <div class="marca-gaivotta"><span>GAIVOTTA</span></div>
+    <h1>Sua árvore de Natal, montada do seu jeito.</h1>
+    <p>8 perguntinhas rápidas e a gente volta no WhatsApp com tamanho, paleta, lista de materiais e prazo.</p>
+    <p class="selo">Leva menos de 1 minuto</p>
+  </div></main>
 
   <footer id="rodape" hidden>
     <button class="btn" id="avancar">Continuar</button>
